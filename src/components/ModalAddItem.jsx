@@ -5,7 +5,7 @@ import InventoryItemCard from './InventoryItemCard';
 import ButtonItem from './Button';
 import TextFieldItem from './TextField';
 
-const ModalAddItem = ({ open, handleClose, item, handleSave }) => {
+const ModalAddItem = ({ open, handleClose, item, edit, handleSave }) => {
   const [name, setName] = useState('');
   return (
     <div>

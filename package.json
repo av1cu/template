@@ -1,7 +1,7 @@
 {
   "name": "template",
   "version": "0.1.0",
-  "homepage": "https://av1cu.github.io/template",
+  "homepage": "https://av1cu.github.io/template/#",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.13.5",

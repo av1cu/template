@@ -10,15 +10,17 @@ import {
 import StorageIcon from '@mui/icons-material/Storage';
 import TrainIcon from '@mui/icons-material/Train';
 import { useTheme } from '@emotion/react';
+import { useNavigate } from 'react-router';
 
 const Sidebar = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
 
   return (
     <div className={styles.sidebar}>
       <List sx={{ background: theme.palette.background.paper, height: '100%' }}>
         <ListItem disablePadding>
-          <ListItemButton>
+          <ListItemButton onClick={() => navigate('/inventory')}>
             <ListItemIcon>
               <StorageIcon />
             </ListItemIcon>
@@ -26,7 +28,7 @@ const Sidebar = () => {
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton>
+          <ListItemButton onClick={() => navigate('/trains')}>
             <ListItemIcon>
               <TrainIcon />
             </ListItemIcon>

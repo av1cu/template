@@ -43,7 +43,7 @@ const Inventory = () => {
         <Sidebar />
       </Grid2>
       <Grid2 size={10} sx={{ p: 2 }}>
-        <div>
+        <div className='content'>
           <Typography variant='h4' sx={{ mb: 2 }}>
             Склад
           </Typography>

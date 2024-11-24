@@ -5,37 +5,92 @@ import InventoryCard from '../components/InventoryCard';
 import ModalInventoryList from '../components/ModalInventoryList';
 import ModalAddItem from '../components/ModalAddItem';
 import ButtonItem from '../components/Button';
+import TrainCard from '../components/TrainCard';
+import ModalAddTrain from '../components/ModalAddTrain';
 
 const Trains = () => {
   const [items, setItems] = useState([
-    { id: 1, amount: 50, title: 'Шины' },
-    { id: 2, amount: 5, title: 'Воздухораспределитель' },
-    { id: 3, amount: 30, title: 'Валы' },
+    {
+      id: 1,
+      data: [
+        { label: 'Название вагона', value: 'Вагон 101' },
+        { label: 'Компания', value: 'Казахстан Темир Жолы' },
+        { label: 'Срок выдачи', value: '2024-11-20' },
+        { label: 'Тип ремонта', value: 'Покраска' },
+        { label: 'Деталь', value: 'Шины' },
+        { label: 'Цена', value: '5000 тг' },
+      ],
+    },
+    {
+      id: 2,
+      data: [
+        { label: 'Название вагона', value: 'Вагон 102' },
+        { label: 'Компания', value: 'Российские Железные Дороги' },
+        { label: 'Срок выдачи', value: '2024-11-15' },
+        { label: 'Тип ремонта', value: 'Обновление' },
+        { label: 'Деталь', value: 'Воздухораспределитель' },
+        { label: 'Цена', value: '12000 тг' },
+      ],
+    },
+    {
+      id: 3,
+      data: [
+        { label: 'Название вагона', value: 'Вагон 103' },
+        { label: 'Компания', value: 'Укрзализныця' },
+        { label: 'Срок выдачи', value: '2024-11-18' },
+        { label: 'Тип ремонта', value: 'Починка' },
+        { label: 'Деталь', value: 'Валы' },
+        { label: 'Цена', value: '8000 тг' },
+      ],
+    },
+    {
+      id: 4,
+      data: [
+        { label: 'Название вагона', value: 'Вагон 104' },
+        { label: 'Компания', value: 'Белорусская Железная Дорога' },
+        { label: 'Срок выдачи', value: '2024-11-22' },
+        { label: 'Тип ремонта', value: 'Покраска' },
+        { label: 'Деталь', value: 'Шины' },
+        { label: 'Цена', value: '4500 тг' },
+      ],
+    },
   ]);
-  const [openModalInventoryList, setOpenModalInventoryList] = useState(false);
-  const [modalInventoryList, setModalInventoryList] = useState([]);
-  const [currentItem, setCurrentItem] = useState({});
   const [modalAddItemOpen, setModalAddItemOpen] = useState(false);
-
-  const handleItemSelect = (item) => {
-    setModalInventoryList([
-      { id: 1, title: 'Шина' },
-      { id: 2, title: 'Шина' },
-      { id: 3, title: 'Шина' },
-      { id: 4, title: 'Шина' },
-      { id: 5, title: 'Шина' },
-      { id: 6, title: 'Шина' },
-    ]);
-    setCurrentItem(item);
-    setOpenModalInventoryList(true);
-  };
+  const [edit, setEdit] = useState(false);
+  const [currentItem, setCurrentItem] = useState({});
 
   const handleAddItem = () => {
-    setOpenModalInventoryList(false);
+    setEdit(false);
     setModalAddItemOpen(true);
   };
 
-  const handleTakeItem = () => {};
+  const handleEdit = (item) => {
+    setEdit(true);
+    setCurrentItem(item);
+    setModalAddItemOpen(true);
+  };
+
+  const handleSave = (newData) => {
+    const formattedData = Object.keys(newData).map((key) => ({
+      label: dummyLabels.find((field) => field.key === key)?.label || key,
+      value: newData[key],
+    }));
+    const newItem = {
+      id: items.length + 1,
+      data: formattedData,
+    };
+    setItems((prevItems) => [...prevItems, newItem]);
+    setModalAddItemOpen(false);
+  };
+
+  const dummyLabels = [
+    { key: 'name', label: 'Название вагона' },
+    { key: 'company', label: 'Компания' },
+    { key: 'dateIssued', label: 'Срок выдачи' },
+    { key: 'repairType', label: 'Тип ремонта' },
+    { key: 'partName', label: 'Деталь' },
+    { key: 'price', label: 'Цена' },
+  ];
 
   return (
     <Grid2 container>
@@ -43,7 +98,7 @@ const Trains = () => {
         <Sidebar />
       </Grid2>
       <Grid2 size={10} sx={{ p: 2 }}>
-        <div>
+        <div className='content'>
           <Typography variant='h4' sx={{ mb: 2 }}>
             Вагоны
           </Typography>
@@ -57,25 +112,21 @@ const Trains = () => {
           <Grid2 container spacing={2}>
             {items.map((item, index) => (
               <Grid2 key={index} size={{ xs: 6, md: 4 }}>
-                <InventoryCard
+                <TrainCard
                   title={item.title}
-                  amount={item.amount}
-                  handleClick={() => handleItemSelect(item)}
+                  item={item}
+                  handleEdit={handleEdit}
+                  // handleDelete={handleDelete}
                 />
               </Grid2>
             ))}
           </Grid2>
-          {/* <ModalInventoryList
-            open={openModalInventoryList}
-            handleClose={() => setOpenModalInventoryList(false)}
-            items={modalInventoryList}
-            title={currentItem.title}
-            handleAddItem={handleAddItem}
-            handleTakeItem={handleTakeItem}
-          /> */}
-          <ModalAddItem
+          <ModalAddTrain
             open={modalAddItemOpen}
             handleClose={() => setModalAddItemOpen(false)}
+            handleSave={handleSave}
+            edit={edit}
+            item={currentItem}
           />
         </div>
       </Grid2>

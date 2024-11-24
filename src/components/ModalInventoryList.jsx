@@ -1,0 +1,42 @@
+import React from 'react';
+import ModalItem from './ModalItem';
+import { Grid2, Stack } from '@mui/material';
+import InventoryItemCard from './InventoryItemCard';
+import ButtonItem from './Button';
+
+const ModalInventoryList = ({
+  open,
+  handleClose,
+  title,
+  items,
+  handleAddItem,
+  handleTakeItem,
+}) => {
+  return (
+    <div>
+      <ModalItem
+        open={open}
+        handleClose={handleClose}
+        title={title}
+        items={items}
+      >
+        <ButtonItem
+          label='Добавить'
+          variant='outlined'
+          size='small'
+          handleChange={handleAddItem}
+          sx={{ mb: 2 }}
+        />
+        <Grid2 container spacing={2}>
+          {items.map((item, index) => (
+            <Grid2 key={index} size={{ xs: 6, md: 4 }}>
+              <InventoryItemCard item={item} handleTakeItem={handleTakeItem} />
+            </Grid2>
+          ))}
+        </Grid2>
+      </ModalItem>
+    </div>
+  );
+};
+
+export default ModalInventoryList;

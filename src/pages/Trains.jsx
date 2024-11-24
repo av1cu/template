@@ -71,16 +71,33 @@ const Trains = () => {
   };
 
   const handleSave = (newData) => {
+    if (edit) {
+    }
     const formattedData = Object.keys(newData).map((key) => ({
-      label: dummyLabels.find((field) => field.key === key)?.label || key,
+      label: dummyLabels.find((field) => field.label === key)?.label || key,
       value: newData[key],
     }));
     const newItem = {
       id: items.length + 1,
       data: formattedData,
     };
-    setItems((prevItems) => [...prevItems, newItem]);
+    if (edit) {
+      setItems(
+        items.map((i) =>
+          currentItem.id == i.id
+            ? { id: currentItem.id, data: formattedData }
+            : i
+        )
+      );
+    } else {
+      setItems((prevItems) => [...prevItems, newItem]);
+    }
     setModalAddItemOpen(false);
+  };
+
+  const handleDelete = (id) => {
+    const updatedItems = items.filter((item) => item.id !== id);
+    setItems(updatedItems);
   };
 
   const dummyLabels = [
@@ -111,12 +128,12 @@ const Trains = () => {
           />
           <Grid2 container spacing={2}>
             {items.map((item, index) => (
-              <Grid2 key={index} size={{ xs: 6, md: 4 }}>
+              <Grid2 key={index} size={{ xs: 12, sm: 6, md: 4 }}>
                 <TrainCard
                   title={item.title}
                   item={item}
                   handleEdit={handleEdit}
-                  // handleDelete={handleDelete}
+                  handleDelete={handleDelete}
                 />
               </Grid2>
             ))}

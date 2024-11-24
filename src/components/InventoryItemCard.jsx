@@ -10,27 +10,42 @@ import ButtonItem from './Button';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const InventoryItemCard = ({ item, handleTakeItem, ...props }) => {
+const InventoryItemCard = ({
+  item,
+  handleTakeItem,
+  handleEditItem,
+  handleDeleteItem,
+}) => {
+  // const [editModalOpen, setEditModalOpen] = useState(false);
+
   return (
     <div>
       <Card>
         <CardContent>
-          <Typography variant='p1'>{item.title}</Typography>
+          <Typography variant='body1'>{item.title}</Typography>
         </CardContent>
         <CardActions>
           <ButtonItem
             label='Взять'
             size='small'
-            handleChange={() => handleTakeItem(item)}
+            handleChange={handleTakeItem}
           />
-          <IconButton size='small'>
+          {/* <IconButton size="small" onClick={() => setEditModalOpen(true)}>
             <EditIcon />
-          </IconButton>
-          <IconButton size='small'>
+          </IconButton> */}
+          <IconButton size='small' onClick={handleDeleteItem}>
             <DeleteIcon />
           </IconButton>
         </CardActions>
       </Card>
+
+      {/* Edit Modal */}
+      {/* <ModalEditDataItem
+        open={editModalOpen}
+        handleClose={() => setEditModalOpen(false)}
+        handleSave={handleEditItem}
+        initialData={item}
+      /> */}
     </div>
   );
 };

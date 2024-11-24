@@ -10,7 +10,7 @@ import React from 'react';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const TrainCard = ({ title, item, handleEdit, ...props }) => {
+const TrainCard = ({ title, item, handleEdit, handleDelete, ...props }) => {
   return (
     <div>
       <Card sx={{ minHeight: 290 }}>
@@ -18,7 +18,7 @@ const TrainCard = ({ title, item, handleEdit, ...props }) => {
           <IconButton size='small' onClick={() => handleEdit(item)}>
             <EditIcon />
           </IconButton>
-          <IconButton size='small'>
+          <IconButton size='small' onClick={() => handleDelete(item.id)}>
             <DeleteIcon />
           </IconButton>
         </CardActions>

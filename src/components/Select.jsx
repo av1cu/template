@@ -5,7 +5,7 @@ const SelectForm = ({ value, handleChange, label, options, ...props }) => {
   return (
     <div>
       <FormControl fullWidth>
-        <InputLabel id='select-label'>Выберите город</InputLabel>
+        <InputLabel id='select-label'>{label}</InputLabel>
         <Select
           labelId='select-label'
           id='select'

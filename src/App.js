@@ -6,6 +6,7 @@ import Login from './pages/auth/Login';
 import Inventory from './pages/Inventory';
 import { createTheme, CssBaseline, ThemeProvider } from '@mui/material';
 import Trains from './pages/Trains';
+import Schedule from './pages/Schedule';
 
 const darkTheme = createTheme({
   palette: {
@@ -73,6 +74,7 @@ function App() {
         </Route>
         <Route path='inventory' element={<Inventory />} />
         <Route path='trains' element={<Trains />} />
+        <Route path='schedule' element={<Schedule />} />
       </Routes>
     </ThemeProvider>
   );

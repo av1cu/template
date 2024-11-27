@@ -10,3 +10,12 @@ html {
   max-height: 95vh;
   overflow-y: scroll;
 }
+
+.MuiPagination-ul {
+  justify-content: center;
+}
+
+.logo {
+  max-width: 60px;
+  height: auto;
+}

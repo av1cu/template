@@ -1,12 +1,22 @@
 import React, { useState } from 'react';
 import Sidebar from '../components/Sidebar';
-import { Grid2, Typography } from '@mui/material';
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Grid2,
+  Typography,
+} from '@mui/material';
 import InventoryCard from '../components/InventoryCard';
 import ModalInventoryList from '../components/ModalInventoryList';
 import ModalAddItem from '../components/ModalAddItem';
 import ButtonItem from '../components/Button';
 import TrainCard from '../components/TrainCard';
 import ModalAddTrain from '../components/ModalAddTrain';
+import TextFieldItem from '../components/TextField';
 
 const Trains = () => {
   const [items, setItems] = useState([
@@ -58,6 +68,8 @@ const Trains = () => {
   const [modalAddItemOpen, setModalAddItemOpen] = useState(false);
   const [edit, setEdit] = useState(false);
   const [currentItem, setCurrentItem] = useState({});
+  const [fields, setFields] = useState({});
+  const [calc, setCalc] = useState(false);
 
   const handleAddItem = () => {
     setEdit(false);
@@ -71,28 +83,7 @@ const Trains = () => {
   };
 
   const handleSave = (newData) => {
-    if (edit) {
-    }
-    const formattedData = Object.keys(newData).map((key) => ({
-      label: dummyLabels.find((field) => field.label === key)?.label || key,
-      value: newData[key],
-    }));
-    const newItem = {
-      id: items.length + 1,
-      data: formattedData,
-    };
-    if (edit) {
-      setItems(
-        items.map((i) =>
-          currentItem.id == i.id
-            ? { id: currentItem.id, data: formattedData }
-            : i
-        )
-      );
-    } else {
-      setItems((prevItems) => [...prevItems, newItem]);
-    }
-    setModalAddItemOpen(false);
+    setCalc(false);
   };
 
   const handleDelete = (id) => {
@@ -109,6 +100,17 @@ const Trains = () => {
     { key: 'price', label: 'Цена' },
   ];
 
+  const handleFieldChange = (key, value) => {
+    setFields((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
+  const handleCalc = () => {
+    setCalc(true);
+  };
+
   return (
     <Grid2 container>
       <Grid2 size={2}>
@@ -119,7 +121,44 @@ const Trains = () => {
           <Typography variant='h4' sx={{ mb: 2 }}>
             Вагоны
           </Typography>
+          {dummyLabels.map(({ key, label }) => (
+            <TextFieldItem
+              key={key}
+              label={label}
+              value={fields[label]}
+              handleChange={(e) => handleFieldChange(label, e.target.value)}
+              fullWidth
+              size='small'
+              sx={{ mb: 2 }}
+            />
+          ))}
           <ButtonItem
+            label='Добавить'
+            variant='outlined'
+            size='small'
+            handleChange={handleCalc}
+            sx={{ mb: 2 }}
+          />
+          <Dialog
+            open={calc}
+            onClose={() => setCalc(false)}
+            aria-labelledby='alert-dialog-title'
+            aria-describedby='alert-dialog-description'
+          >
+            <DialogTitle id='alert-dialog-title'>{'Продолжить?'}</DialogTitle>
+            <DialogContent>
+              <DialogContentText id='alert-dialog-description'>
+                Стоимость: 100 000
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setCalc(false)}>Нет</Button>
+              <Button onClick={handleSave} autoFocus>
+                Да
+              </Button>
+            </DialogActions>
+          </Dialog>
+          {/* <ButtonItem
             label='Добавить'
             variant='outlined'
             size='small'
@@ -144,7 +183,7 @@ const Trains = () => {
             handleSave={handleSave}
             edit={edit}
             item={currentItem}
-          />
+          /> */}
         </div>
       </Grid2>
     </Grid2>

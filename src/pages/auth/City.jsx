@@ -21,6 +21,7 @@ const City = () => {
       <Card sx={{ width: '100%' }}>
         <CardContent sx={{ pt: 4 }}>
           <SelectForm
+            label='Выберите город'
             options={[
               { label: 'Алматы', value: 'almaty' },
               { label: 'Астана', value: 'astana' },
@@ -52,7 +53,6 @@ const City = () => {
               { label: 'Сарыагаш', value: 'saryagash' },
               { label: 'Щучинск', value: 'shchuchinsk' },
             ]}
-            label={city.label}
             value={city.value}
             handleChange={(c) => setCity(c)}
             variant='outlined'

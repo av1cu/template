@@ -27,3 +27,9 @@ html {
   max-width: 60px;
   height: auto;
 }
+
+@media screen and (max-width: 500px) {
+  .logo {
+    max-width: 30px;
+  }
+}

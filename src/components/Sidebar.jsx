@@ -6,6 +6,7 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  useMediaQuery,
 } from '@mui/material';
 import StorageIcon from '@mui/icons-material/Storage';
 import TrainIcon from '@mui/icons-material/Train';
@@ -21,6 +22,7 @@ import HomeIcon from '@mui/icons-material/Home';
 const Sidebar = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const desktop = useMediaQuery('(min-width:500px)');
 
   return (
     <div className={styles.sidebar}>
@@ -37,7 +39,7 @@ const Sidebar = () => {
             <ListItemIcon>
               <HomeIcon />
             </ListItemIcon>
-            <ListItemText primary='Главная' />
+            {desktop && <ListItemText primary='Главная' />}
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
@@ -45,7 +47,7 @@ const Sidebar = () => {
             <ListItemIcon>
               <StorageIcon />
             </ListItemIcon>
-            <ListItemText primary='Склад' />
+            {desktop && <ListItemText primary='Склад' />}
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
@@ -53,7 +55,7 @@ const Sidebar = () => {
             <ListItemIcon>
               <TrainIcon />
             </ListItemIcon>
-            <ListItemText primary='Вагоны' />
+            {desktop && <ListItemText primary='Вагоны' />}
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
@@ -61,7 +63,7 @@ const Sidebar = () => {
             <ListItemIcon>
               <CalendarMonthIcon />
             </ListItemIcon>
-            <ListItemText primary='Расписание' />
+            {desktop && <ListItemText primary='Расписание' />}
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
@@ -69,7 +71,7 @@ const Sidebar = () => {
             <ListItemIcon>
               <CalculateIcon />
             </ListItemIcon>
-            <ListItemText primary='Калькуляция' />
+            {desktop && <ListItemText primary='Калькуляция' />}
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
@@ -77,7 +79,8 @@ const Sidebar = () => {
             <ListItemIcon>
               <HistoryIcon />
             </ListItemIcon>
-            <ListItemText primary='История' />
+
+            {desktop && <ListItemText primary='История' />}
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
@@ -85,7 +88,7 @@ const Sidebar = () => {
             <ListItemIcon>
               <LogoutIcon />
             </ListItemIcon>
-            <ListItemText primary='Выйти' />
+            {desktop && <ListItemText primary='Выйти' />}
           </ListItemButton>
         </ListItem>
       </List>

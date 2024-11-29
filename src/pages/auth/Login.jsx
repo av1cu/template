@@ -19,42 +19,44 @@ const Login = () => {
   };
 
   const handleSubmit = () => {
-    navigate('/inventory');
+    navigate('/');
   };
   return (
-    <Container maxWidth='xs' className={styles.container}>
-      <Typography variant='h4' align='center' sx={{ mb: 4 }}>
-        Авторизация
-      </Typography>
-      <Card sx={{ width: '100%' }}>
-        <CardContent>
-          <TextFieldItem
-            label='Логин'
-            value={login}
-            handleChange={handleLoginChange}
-            size='small'
-            fullWidth
-            sx={{ mb: 1 }}
-          />
-          <TextFieldItem
-            label='Пароль'
-            value={password}
-            handleChange={handlePasswordChange}
-            size='small'
-            fullWidth
-            sx={{ mb: 1 }}
-            type='password'
-          />
-          <ButtonItem
-            label='Войти'
-            variant='outlined'
-            handleChange={handleSubmit}
-            size='small'
-            fullWidth
-          />
-        </CardContent>
-      </Card>
-    </Container>
+    <div className={styles.bg}>
+      <Container maxWidth='xs' className={styles.container}>
+        <Typography variant='h4' align='center' sx={{ mb: 4 }}>
+          Авторизация
+        </Typography>
+        <Card sx={{ width: '100%' }}>
+          <CardContent>
+            <TextFieldItem
+              label='Логин'
+              value={login}
+              handleChange={handleLoginChange}
+              size='small'
+              fullWidth
+              sx={{ mb: 1 }}
+            />
+            <TextFieldItem
+              label='Пароль'
+              value={password}
+              handleChange={handlePasswordChange}
+              size='small'
+              fullWidth
+              sx={{ mb: 1 }}
+              type='password'
+            />
+            <ButtonItem
+              label='Войти'
+              variant='outlined'
+              handleChange={handleSubmit}
+              size='small'
+              fullWidth
+            />
+          </CardContent>
+        </Card>
+      </Container>
+    </div>
   );
 };
 

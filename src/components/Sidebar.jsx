@@ -16,6 +16,7 @@ import logo from './../assets/img/569D8225-32BC-45D1-BD44-F1FA1C7A9309-removebg-
 import CalculateIcon from '@mui/icons-material/Calculate';
 import LogoutIcon from '@mui/icons-material/Logout';
 import HistoryIcon from '@mui/icons-material/History';
+import HomeIcon from '@mui/icons-material/Home';
 
 const Sidebar = () => {
   const theme = useTheme();
@@ -29,6 +30,14 @@ const Sidebar = () => {
             <ListItemIcon>
               <img src={logo} alt='logo' className='logo' />
             </ListItemIcon>
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton onClick={() => navigate('/')}>
+            <ListItemIcon>
+              <HomeIcon />
+            </ListItemIcon>
+            <ListItemText primary='Главная' />
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
@@ -72,7 +81,7 @@ const Sidebar = () => {
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton>
+          <ListItemButton onClick={() => navigate('/auth/login')}>
             <ListItemIcon>
               <LogoutIcon />
             </ListItemIcon>

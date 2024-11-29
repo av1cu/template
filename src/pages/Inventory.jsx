@@ -1,107 +1,166 @@
 import React, { useState } from 'react';
 import Sidebar from '../components/Sidebar';
-import { Grid2, Typography } from '@mui/material';
+import { Grid2, Pagination, Stack, Typography } from '@mui/material';
 import InventoryCard from '../components/InventoryCard';
 import ModalInventoryList from '../components/ModalInventoryList';
 import ModalAddItem from '../components/ModalAddItem';
 import ButtonItem from '../components/Button';
+import TableItem from '../components/TableItem';
 
 const Inventory = () => {
-  const [items, setItems] = useState([
+  const [data, setData] = useState([
     {
       id: 1,
-      title: 'Шины',
-      amount: 50,
       data: [
-        { id: 1, title: 'Шина A' },
-        { id: 2, title: 'Шина B' },
+        { label: 'Наименование', value: 'Шурупы' },
+        { label: 'Код', value: 'SRP001' },
+        { label: 'Количество', value: '150' },
+        { label: 'Себестоимость', value: '2.50' },
+        { label: 'Сумма оборот', value: '375.00' },
       ],
     },
     {
       id: 2,
-      title: 'Воздухораспределитель',
-      amount: 5,
-      data: [{ id: 1, title: 'Деталь X' }],
+      data: [
+        { label: 'Наименование', value: 'Гайки' },
+        { label: 'Код', value: 'NTK002' },
+        { label: 'Количество', value: '200' },
+        { label: 'Себестоимость', value: '1.75' },
+        { label: 'Сумма оборот', value: '350.00' },
+      ],
     },
     {
       id: 3,
-      title: 'Валы',
-      amount: 30,
-      data: [{ id: 1, title: 'Вал Y' }],
+      data: [
+        { label: 'Наименование', value: 'Болты' },
+        { label: 'Код', value: 'BLT003' },
+        { label: 'Количество', value: '100' },
+        { label: 'Себестоимость', value: '3.00' },
+        { label: 'Сумма оборот', value: '300.00' },
+      ],
+    },
+    {
+      id: 4,
+      data: [
+        { label: 'Наименование', value: 'Дюбели' },
+        { label: 'Код', value: 'DUB004' },
+        { label: 'Количество', value: '250' },
+        { label: 'Себестоимость', value: '1.20' },
+        { label: 'Сумма оборот', value: '300.00' },
+      ],
+    },
+    {
+      id: 5,
+      data: [
+        { label: 'Наименование', value: 'Шайбы' },
+        { label: 'Код', value: 'WBR005' },
+        { label: 'Количество', value: '300' },
+        { label: 'Себестоимость', value: '0.50' },
+        { label: 'Сумма оборот', value: '150.00' },
+      ],
+    },
+    {
+      id: 6,
+      data: [
+        { label: 'Наименование', value: 'Клей' },
+        { label: 'Код', value: 'GLU006' },
+        { label: 'Количество', value: '50' },
+        { label: 'Себестоимость', value: '5.00' },
+        { label: 'Сумма оборот', value: '250.00' },
+      ],
+    },
+    {
+      id: 7,
+      data: [
+        { label: 'Наименование', value: 'Кабель' },
+        { label: 'Код', value: 'CBL007' },
+        { label: 'Количество', value: '500' },
+        { label: 'Себестоимость', value: '0.80' },
+        { label: 'Сумма оборот', value: '400.00' },
+      ],
+    },
+    {
+      id: 8,
+      data: [
+        { label: 'Наименование', value: 'Лампы' },
+        { label: 'Код', value: 'LMP008' },
+        { label: 'Количество', value: '60' },
+        { label: 'Себестоимость', value: '8.50' },
+        { label: 'Сумма оборот', value: '510.00' },
+      ],
+    },
+    {
+      id: 9,
+      data: [
+        { label: 'Наименование', value: 'Розетки' },
+        { label: 'Код', value: 'SCK009' },
+        { label: 'Количество', value: '80' },
+        { label: 'Себестоимость', value: '7.00' },
+        { label: 'Сумма оборот', value: '560.00' },
+      ],
+    },
+    {
+      id: 10,
+      data: [
+        { label: 'Наименование', value: 'Выключатели' },
+        { label: 'Код', value: 'SWT010' },
+        { label: 'Количество', value: '90' },
+        { label: 'Себестоимость', value: '6.50' },
+        { label: 'Сумма оборот', value: '585.00' },
+      ],
+    },
+    {
+      id: 11,
+      data: [
+        { label: 'Наименование', value: 'Провода' },
+        { label: 'Код', value: 'WRD011' },
+        { label: 'Количество', value: '150' },
+        { label: 'Себестоимость', value: '3.20' },
+        { label: 'Сумма оборот', value: '480.00' },
+      ],
+    },
+    {
+      id: 12,
+      data: [
+        { label: 'Наименование', value: 'Ручки дверные' },
+        { label: 'Код', value: 'HDR012' },
+        { label: 'Количество', value: '40' },
+        { label: 'Себестоимость', value: '12.00' },
+        { label: 'Сумма оборот', value: '480.00' },
+      ],
     },
   ]);
 
-  const [currentItem, setCurrentItem] = useState(null);
-  const [modalAddItemOpen, setModalAddItemOpen] = useState(false);
-  const [modalInventoryListOpen, setModalInventoryListOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
-  // Handlers for Main Inventory Items
-  const handleAddInventoryItem = (newItem) => {
-    setItems((prevItems) => [
-      ...prevItems,
-      { ...newItem, id: Date.now(), data: [] },
-    ]);
+  const handleChangePage = (event, page) => {
+    setCurrentPage(page);
   };
 
-  const handleEditInventoryItem = (id, updatedItem) => {
-    setItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id ? { ...item, ...updatedItem } : item
-      )
-    );
-  };
+  const paginatedData = data.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
-  const handleDeleteInventoryItem = (id) => {
-    setItems((prevItems) => prevItems.filter((item) => item.id !== id));
-  };
+  const labels = paginatedData[0]?.data.map((item) => item.label) || [];
+  const rows = paginatedData.map((wagon) => wagon.data);
 
-  // Handlers for Nested Data Items
-  const handleAddDataItem = (newDataItem) => {
-    setItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === currentItem.id
+  const handleStatusChange = (id, newStatus) => {
+    setData((prevData) =>
+      prevData.map((item) =>
+        item.id === id
           ? {
               ...item,
-              data: [...item.data, { ...newDataItem, id: Date.now() }],
-            }
-          : item
-      )
-    );
-    setModalAddItemOpen(false);
-  };
-
-  const handleEditDataItem = (inventoryId, dataItemId, updatedDataItem) => {
-    setItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === inventoryId
-          ? {
-              ...item,
-              data: item.data.map((data) =>
-                data.id === dataItemId ? { ...data, ...updatedDataItem } : data
+              data: item.data.map((field) =>
+                field.label === 'Статус'
+                  ? { ...field, value: newStatus }
+                  : field
               ),
             }
           : item
       )
     );
-  };
-
-  const handleDeleteDataItem = (dataItemId) => {
-    setItems(
-      items.map((item) =>
-        item.id == currentItem.id
-          ? {
-              ...item,
-              data: item.data.filter((d) => d.id != dataItemId),
-            }
-          : item
-      )
-    );
-    setCurrentItem(items.find((i) => i.id == currentItem.id));
-  };
-
-  const handleOpenInventoryList = (item) => {
-    setCurrentItem(item);
-    setModalInventoryListOpen(true);
   };
 
   return (
@@ -114,54 +173,20 @@ const Inventory = () => {
           <Typography variant='h4' sx={{ mb: 2 }}>
             Склад
           </Typography>
-          <ButtonItem
-            label='Добавить'
-            variant='outlined'
-            size='small'
-            handleChange={() => {
-              setCurrentItem(null);
-              setModalAddItemOpen(true);
-            }}
-            sx={{ mb: 2 }}
+          <TableItem
+            rows={rows}
+            labels={labels}
+            onStatusChange={handleStatusChange}
           />
-          <Grid2 container spacing={2}>
-            {items.map((item) => (
-              <Grid2 key={item.id} size={{ xs: 6, md: 3 }}>
-                <InventoryCard
-                  title={item.title}
-                  amount={item.amount}
-                  handleClick={() => handleOpenInventoryList(item)}
-                  onDelete={() => handleDeleteInventoryItem(item.id)}
-                />
-              </Grid2>
-            ))}
-          </Grid2>
-          {modalInventoryListOpen && (
-            <ModalInventoryList
-              open={modalInventoryListOpen}
-              handleClose={() => setModalInventoryListOpen(false)}
-              items={currentItem.data}
-              title={currentItem.title}
-              handleAddItem={() => {
-                setModalInventoryListOpen(false);
-                setModalAddItemOpen(true);
-              }}
-              handleTakeItem={(dataId) => handleDeleteDataItem(dataId)}
-              handleEditItem={(dataItem) =>
-                handleEditDataItem(currentItem.id, dataItem)
-              }
-              handleDeleteItem={(dataItemId) =>
-                handleDeleteDataItem(dataItemId)
-              }
+          <Stack sx={{ justifyContent: 'center', mt: 2 }}>
+            <Pagination
+              count={Math.ceil(data.length / itemsPerPage)}
+              page={currentPage}
+              onChange={handleChangePage}
+              shape='rounded'
+              sx={{ width: '100%' }}
             />
-          )}
-          <ModalAddItem
-            open={modalAddItemOpen}
-            handleClose={() => setModalAddItemOpen(false)}
-            handleSave={
-              currentItem ? handleAddDataItem : handleAddInventoryItem
-            }
-          />
+          </Stack>
         </div>
       </Grid2>
     </Grid2>

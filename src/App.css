@@ -7,8 +7,16 @@ html {
 }
 
 .content {
-  max-height: 95vh;
+  height: 100vh;
+  max-height: 100vh;
   overflow-y: scroll;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.8)
+    url(./assets/img/WhatsApp\ Image\ 2024-11-28\ at\ 20.22.17.jpeg);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-blend-mode: darken;
 }
 
 .MuiPagination-ul {

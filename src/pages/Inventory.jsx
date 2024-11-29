@@ -109,7 +109,7 @@ const Inventory = () => {
       <Grid2 size={2}>
         <Sidebar />
       </Grid2>
-      <Grid2 size={10} sx={{ p: 2 }}>
+      <Grid2 size={10}>
         <div className='content'>
           <Typography variant='h4' sx={{ mb: 2 }}>
             Склад
@@ -126,7 +126,7 @@ const Inventory = () => {
           />
           <Grid2 container spacing={2}>
             {items.map((item) => (
-              <Grid2 key={item.id} size={{ xs: 6, md: 4 }}>
+              <Grid2 key={item.id} size={{ xs: 6, md: 3 }}>
                 <InventoryCard
                   title={item.title}
                   amount={item.amount}

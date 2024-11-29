@@ -11,7 +11,7 @@ import React from 'react';
 import SelectForm from './Select';
 import HandleStatus from '../utils/HandleStatus';
 
-const TableItem = ({ rows, labels, ...props }) => {
+const TableItem = ({ rows, labels, onStatusChange, onRowClick }) => {
   return (
     <div>
       <TableContainer component={Paper}>
@@ -19,27 +19,39 @@ const TableItem = ({ rows, labels, ...props }) => {
           <TableHead>
             <TableRow>
               {labels.map((label, index) => (
-                <TableCell align={index === 0 ? 'left' : 'right'}>
+                <TableCell key={index} align={index === 0 ? 'left' : 'right'}>
                   {label}
                 </TableCell>
               ))}
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
+            {rows.map((row, rowIndex) => (
               <TableRow
-                key={row.name}
+                key={rowIndex}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                onClick={() => onRowClick && onRowClick(row)}
               >
-                {row.map((cell, index) => (
-                  <TableCell align={index === 0 ? 'left' : 'right'}>
-                    {index === row.length - 1 ? (
-                      <HandleStatus cell={cell} />
-                    ) : (
-                      cell
-                    )}
-                  </TableCell>
-                ))}
+                {row.map(
+                  (cell, cellIndex) =>
+                    cell.label !== 'id' && (
+                      <TableCell
+                        key={cellIndex}
+                        align={cellIndex === 0 ? 'left' : 'right'}
+                      >
+                        {labels[cellIndex] === 'Статус' && onStatusChange ? (
+                          <HandleStatus
+                            cell={cell.value}
+                            onChange={(newStatus) =>
+                              onStatusChange(rows[rowIndex][0].value, newStatus)
+                            }
+                          />
+                        ) : (
+                          cell.value
+                        )}
+                      </TableCell>
+                    )
+                )}
               </TableRow>
             ))}
           </TableBody>

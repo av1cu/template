@@ -9,9 +9,11 @@ const style = {
   transform: 'translate(-50%, -50%)',
   width: '70%',
   maxHeight: '90vh',
-  bgcolor: 'background.paper',
+  bgcolor: 'rgba(30,30,30,1)',
   boxShadow: 24,
   p: 4,
+  overflowY: 'scroll',
+  'scrollbar-width': 'thin',
 };
 
 const ModalItem = ({ children, open, handleClose, title, ...props }) => {

@@ -1,35 +1,31 @@
+import { Grid2, Stack, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import Sidebar from '../components/Sidebar';
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Grid2,
-  Typography,
-} from '@mui/material';
-import InventoryCard from '../components/InventoryCard';
-import ModalInventoryList from '../components/ModalInventoryList';
-import ModalAddItem from '../components/ModalAddItem';
-import ButtonItem from '../components/Button';
-import TrainCard from '../components/TrainCard';
-import ModalAddTrain from '../components/ModalAddTrain';
 import TextFieldItem from '../components/TextField';
+import ButtonItem from '../components/Button';
 import SelectForm from '../components/Select';
 
 const labels = [
   { key: 'wagonNumber', label: 'Номер вагона', type: 'text' },
   { key: 'wagonType', label: 'Тип вагона', type: 'select' },
   { key: 'customer', label: 'Заказчик', type: 'text' },
-  { key: 'contract', label: 'Договор', type: 'text' },
+  // { key: 'contract', label: 'Договор', type: 'text' },
   { key: 'repairStart', label: 'Начало ремонта', type: 'date' },
   { key: 'repairEnd', label: 'Конец ремонта', type: 'date' },
   { key: 'repairType', label: 'Тип ремонта', type: 'select' },
   { key: 'workGroup', label: 'Группа работ', type: 'select' },
   { key: 'workName', label: 'Наименование работ', type: 'text' },
-  { key: 'executor', label: 'Исполнитель', type: 'select' },
+  { key: 'workCost', label: 'Стоимость работ', type: 'number' },
+  { key: 'materials', label: 'Расходные материалы', type: 'select' },
+  { key: 'materialCost', label: 'Стоимость материалов', type: 'number' },
+  { key: 'electricityCost', label: 'Электроэнергия (тенге)', type: 'number' },
+  { key: 'fuelCost', label: 'Топливо (тенге)', type: 'number' },
+  {
+    key: 'socialContributions',
+    label: 'Социальные отчисления (тенге)',
+    type: 'number',
+  },
+  // { key: 'executor', label: 'Исполнитель', type: 'select' },
 ];
 
 const options = {
@@ -67,6 +63,12 @@ const options = {
     },
     { label: 'Уборка вагона внутри', value: 'Уборка вагона внутри' },
   ],
+  materials: [
+    { label: 'Краска', value: 'Краска' },
+    { label: 'Металл', value: 'Металл' },
+    { label: 'Электрод', value: 'Электрод' },
+    { label: 'Древесина', value: 'Древесина' },
+  ],
   executor: [
     { label: 'Шермаханов Т', value: 'Шермаханов Т' },
     { label: 'Назаров Б', value: 'Назаров Б' },
@@ -75,10 +77,17 @@ const options = {
     { label: 'Утегенов Е', value: 'Утегенов Е' },
     { label: 'Аскаров А', value: 'Аскаров А' },
   ],
+  workName: [
+    { label: 'Покраска', value: 'Покраска' },
+    { label: 'Замена деталей', value: 'Замена деталей' },
+    { label: 'Диагностика', value: 'Диагностика' },
+  ],
 };
 
-const Trains = () => {
+const Calculation = () => {
   const [fields, setFields] = useState({});
+  const [total, setTotal] = useState(0);
+  const [totalWithVAT, setTotalWithVAT] = useState(0);
 
   const handleFieldChange = (key, value) => {
     setFields((prev) => ({
@@ -87,7 +96,83 @@ const Trains = () => {
     }));
   };
 
+  const calculateTotal = () => {
+    const workCost = parseFloat(fields.workCost || 0);
+    const materialCost = parseFloat(fields.materialCost || 0);
+    const electricityCost = parseFloat(fields.electricityCost || 0);
+    const fuelCost = parseFloat(fields.fuelCost || 0);
+    const socialContributions = parseFloat(fields.socialContributions || 0);
+
+    const totalAmount =
+      workCost +
+      materialCost +
+      electricityCost +
+      fuelCost +
+      socialContributions;
+
+    setTotal(totalAmount);
+    setTotalWithVAT(totalAmount * 1.12); // 12% НДС
+  };
+
   const handleFieldsRender = ({ key, label, type }) => {
+    if (key === 'workCost' || key === 'materialCost') return;
+    if (key === 'workName') {
+      return (
+        <Grid2 container spacing={1} sx={{ mb: 3 }}>
+          <Grid2 size={7}>
+            <SelectForm
+              label={label}
+              value={fields[key]}
+              options={options[key]}
+              handleChange={(e) => handleFieldChange(key, e.value)}
+              size='small'
+              full
+            />
+          </Grid2>
+          <Grid2 size={5}>
+            <TextFieldItem
+              label='Стоимость работ'
+              value={fields['workCost']}
+              handleChange={(e) =>
+                handleFieldChange('workCost', e.target.value)
+              }
+              size='small'
+              type='number'
+              fullWidth
+            />
+          </Grid2>
+        </Grid2>
+      );
+    }
+
+    if (key === 'materials') {
+      return (
+        <Grid2 container spacing={1} sx={{ mb: 3 }}>
+          <Grid2 size={7}>
+            <SelectForm
+              label={label}
+              value={fields[key]}
+              options={options[key]}
+              handleChange={(e) => handleFieldChange(key, e.value)}
+              size='small'
+            />
+          </Grid2>
+          <Grid2 size={5}>
+            <TextFieldItem
+              label='Стоимость материалов'
+              value={fields['materialCost']}
+              handleChange={(e) =>
+                handleFieldChange('materialCost', e.target.value)
+              }
+              size='small'
+              type='number'
+              fullWidth
+            />
+          </Grid2>
+        </Grid2>
+      );
+    }
+
     switch (type) {
       case 'select':
         return (
@@ -124,6 +209,7 @@ const Trains = () => {
             fullWidth
             size='small'
             sx={{ mb: 3 }}
+            type={type}
           />
         );
     }
@@ -137,20 +223,26 @@ const Trains = () => {
       <Grid2 size={10}>
         <div className='content'>
           <Typography variant='h4' sx={{ mb: 2 }}>
-            Вагоны
+            Калькуляция
           </Typography>
           {labels.map(handleFieldsRender)}
           <ButtonItem
-            label='Добавить'
+            label='Калькуляция'
             variant='outlined'
             size='small'
-            handleChange={() => {}}
+            handleChange={calculateTotal}
             sx={{ mb: 2 }}
           />
+          <Typography variant='h6'>
+            Итого (без НДС): {total.toFixed(2)} тенге
+          </Typography>
+          <Typography variant='h6'>
+            Итого (с НДС): {totalWithVAT.toFixed(2)} тенге
+          </Typography>
         </div>
       </Grid2>
     </Grid2>
   );
 };
 
-export default Trains;
+export default Calculation;

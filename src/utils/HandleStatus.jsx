@@ -2,6 +2,7 @@ import { useState } from 'react';
 import SelectForm from '../components/Select';
 
 const HandleStatus = ({ cell, ...props }) => {
+  console.log(cell);
   const [status, setStatus] = useState(cell);
 
   const handleChange = (event) => {

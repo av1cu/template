@@ -1,23 +1,33 @@
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import React from 'react';
 
-const SelectForm = ({ value, handleChange, label, options, ...props }) => {
+const SelectForm = ({
+  value,
+  handleChange,
+  label,
+  options,
+  multiple = false,
+  ...props
+}) => {
   return (
     <div>
       <FormControl fullWidth>
-        <InputLabel id='select-label'>{label}</InputLabel>
+        <InputLabel id={`select-label-${label}`}>{label}</InputLabel>
         <Select
-          labelId='select-label'
-          id='select'
-          value={value}
+          labelId={`select-label-${label}`}
+          id={`select-${label}`}
+          value={value || (multiple ? [] : '')} // Убедимся, что value — массив для multiple
           label={label}
-          onChange={(e) => {
-            handleChange({ value: e.target.value, label: e.target.name });
-          }}
+          onChange={(e) =>
+            handleChange(multiple ? e.target.value : e.target.value)
+          }
+          multiple={multiple} // Включение режима множественного выбора
           {...props}
         >
           {options.map((opt) => (
-            <MenuItem value={opt.value}>{opt.label}</MenuItem>
+            <MenuItem key={opt.value} value={opt.value}>
+              {opt.label}
+            </MenuItem>
           ))}
         </Select>
       </FormControl>

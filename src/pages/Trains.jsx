@@ -18,6 +18,7 @@ import TrainCard from '../components/TrainCard';
 import ModalAddTrain from '../components/ModalAddTrain';
 import TextFieldItem from '../components/TextField';
 import SelectForm from '../components/Select';
+import { SERVER } from '../../const';
 
 const labels = [
   { key: 'wagonnumber', label: 'Номер вагона', type: 'text' },
@@ -154,7 +155,7 @@ const Trains = () => {
       data['workgroup'] = Array.isArray(data['workgroup'])
         ? data['workgroup']
         : [data['workgroup']];
-      const response = await fetch('http://localhost:3000/trains', {
+      const response = await fetch(SERVER + '/trains', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

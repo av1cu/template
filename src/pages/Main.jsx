@@ -6,7 +6,7 @@ import InventoryCard from '../components/InventoryCard';
 import PasIcon from './../assets/img/FCDD32C4-55B5-4C59-8717-A15A1AACED23-removebg-preview.png';
 import GruzIcon from './../assets/img/FD504E0A-3EC0-4EAE-AF86-4845AFE7BEB1-removebg-preview.png';
 import ModalMain from '../components/ModalMain';
-import { SERVER } from '../../const';
+import { SERVER } from '../const';
 
 const Main = () => {
   const [items, setItems] = useState([]);

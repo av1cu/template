@@ -18,7 +18,7 @@ import TrainCard from '../components/TrainCard';
 import ModalAddTrain from '../components/ModalAddTrain';
 import TextFieldItem from '../components/TextField';
 import SelectForm from '../components/Select';
-import { SERVER } from '../../const';
+import { SERVER } from '../const';
 
 const labels = [
   { key: 'wagonnumber', label: 'Номер вагона', type: 'text' },

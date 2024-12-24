@@ -19,7 +19,11 @@ const SelectForm = ({
           value={value || (multiple ? [] : '')} // Убедимся, что value — массив для multiple
           label={label}
           onChange={(e) =>
+<<<<<<< HEAD
             handleChange(multiple ? e.target.value : e.target.value) // Передаем массив для multiple
+=======
+            handleChange(multiple ? e.target.value : e.target.value)
+>>>>>>> origin/main
           }
           multiple={multiple} // Включение режима множественного выбора
           {...props}

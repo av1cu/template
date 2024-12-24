@@ -1,10 +1,14 @@
+<<<<<<< HEAD
 import { useNavigate } from 'react-router-dom';
+=======
+>>>>>>> origin/main
 import formatDate from '../utils/formatDate';
 import ButtonItem from './Button';
 import ModalItem from './ModalItem';
 import TextFieldItem from './TextField';
 
 const ModalMain = ({ open, handleClose, id, deleteTrain, data = [] }) => {
+<<<<<<< HEAD
   const navigate = useNavigate();  // Хук для навигации
 
   // Проверка, имеет ли вагон статус "Готово"
@@ -15,6 +19,8 @@ const ModalMain = ({ open, handleClose, id, deleteTrain, data = [] }) => {
     navigate('/calculation', { state: { data } });
   };
 
+=======
+>>>>>>> origin/main
   return (
     <ModalItem open={open} handleClose={handleClose} title='Информация'>
       {data.map((row, index) => {
@@ -40,6 +46,7 @@ const ModalMain = ({ open, handleClose, id, deleteTrain, data = [] }) => {
           />
         );
       })}
+<<<<<<< HEAD
       <div
         style={{
           display: 'flex',
@@ -76,6 +83,13 @@ const ModalMain = ({ open, handleClose, id, deleteTrain, data = [] }) => {
           />
         )}
       </div>
+=======
+      <ButtonItem
+        label='Удалить'
+        variant='contained'
+        handleChange={() => deleteTrain(id)} // Добавляем обработчик удаления
+      />
+>>>>>>> origin/main
     </ModalItem>
   );
 };

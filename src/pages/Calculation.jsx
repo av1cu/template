@@ -1,10 +1,11 @@
-import { Grid2, Stack, Typography, Snackbar, Alert  } from '@mui/material';
+import { Grid2, Stack, Typography, Snackbar, Alert } from '@mui/material';
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom'; // Импортируем хук useLocation
 import Sidebar from '../components/Sidebar';
 import TextFieldItem from '../components/TextField';
 import ButtonItem from '../components/Button';
 import SelectForm from '../components/Select';
+import { SERVER } from '../const';
 
 const labels = [
   { key: 'wagonNumber', label: 'Номер вагона', type: 'text' },
@@ -20,7 +21,11 @@ const labels = [
   { key: 'materialCost', label: 'Стоимость материалов', type: 'number' },
   { key: 'electricityCost', label: 'Электроэнергия (тенге)', type: 'number' },
   { key: 'fuelCost', label: 'Топливо (тенге)', type: 'number' },
-  { key: 'socialContributions', label: 'Социальные отчисления (тенге)', type: 'number' },
+  {
+    key: 'socialContributions',
+    label: 'Социальные отчисления (тенге)',
+    type: 'number',
+  },
 ];
 
 const options = {
@@ -39,14 +44,23 @@ const options = {
     { label: 'Рессорное подвешивание', value: 'Рессорное подвешивание' },
     { label: 'Буксы и подшипники', value: 'Буксы и подшипники' },
     { label: 'Автосцепное устройство', value: 'Автосцепное устройство' },
-    { label: 'Переходные устройства и буферные приборы', value: 'Переходные устройства и буферные приборы' },
+    {
+      label: 'Переходные устройства и буферные приборы',
+      value: 'Переходные устройства и буферные приборы',
+    },
     { label: 'Тормозное оборудование', value: 'Тормозное оборудование' },
-    { label: 'Наружная фурнитура и замочные работы', value: 'Наружная фурнитура и замочные работы' },
+    {
+      label: 'Наружная фурнитура и замочные работы',
+      value: 'Наружная фурнитура и замочные работы',
+    },
     { label: 'Отопление и водоснабжение', value: 'Отопление и водоснабжение' },
     { label: 'Столярные работы', value: 'Столярные работы' },
     { label: 'Электро оборудование', value: 'Электро оборудование' },
     { label: 'Сварочные работы', value: 'Сварочные работы' },
-    { label: 'Наружная и внутренняя окраска', value: 'Наружная и внутренняя окраска' },
+    {
+      label: 'Наружная и внутренняя окраска',
+      value: 'Наружная и внутренняя окраска',
+    },
     { label: 'Уборка вагона внутри', value: 'Уборка вагона внутри' },
   ],
   materials: [
@@ -77,7 +91,7 @@ const Calculation = () => {
   const location = useLocation();
   const { state } = location;
 
-  console.log("######################################", state?.data);  // Для отладки
+  console.log('######################################', state?.data); // Для отладки
 
   // Если данные переданы, устанавливаем их в состояние
   useEffect(() => {
@@ -85,7 +99,7 @@ const Calculation = () => {
       const initialFields = {};
 
       // Преобразуем данные в объект, где ключ - это label, а значение - это value
-      state.data.forEach(item => {
+      state.data.forEach((item) => {
         initialFields[item.label] = item.value;
       });
 
@@ -94,12 +108,11 @@ const Calculation = () => {
   }, [state]);
 
   const handleFieldChange = (key, value) => {
-    setFields(prev => ({
+    setFields((prev) => ({
       ...prev,
       [key]: value,
     }));
   };
-  
 
   const calculateTotal = () => {
     const workCost = parseFloat(fields.workCost || 0);
@@ -124,7 +137,7 @@ const Calculation = () => {
     const electricityCost = parseFloat(fields.electricityCost || 0);
     const fuelCost = parseFloat(fields.fuelCost || 0);
     const socialContributions = parseFloat(fields.socialContributions || 0);
-  
+
     // Вычисление общей стоимости и стоимости с НДС
     const totalAmount =
       workCost +
@@ -132,9 +145,9 @@ const Calculation = () => {
       electricityCost +
       fuelCost +
       socialContributions;
-  
+
     const totalWithVAT = totalAmount * 1.12; // 12% НДС
-  
+
     // Возвращаем новый объект с добавленными полями
     return {
       ...fields,
@@ -142,11 +155,10 @@ const Calculation = () => {
       totalWithVAT: totalWithVAT,
     };
   };
-  
 
   const handleFieldsRender = ({ key, label, type }) => {
     // Поле рендерится всегда, даже если нет данных, просто значение будет пустым
-    const fieldValue = fields[label] || '';  // Если данных нет, оставляем пустым
+    const fieldValue = fields[label] || ''; // Если данных нет, оставляем пустым
 
     if (key === 'workCost' || key === 'materialCost') return;
 
@@ -156,21 +168,21 @@ const Calculation = () => {
           label={label}
           value={Array.isArray(fields[label]) ? fields[label] : []} // Убедитесь, что значение — массив
           options={options[key]}
-          handleChange={(value) => handleFieldChange(label, value)}  // handleChange будет работать с массивом
-          multiple  // Для работы с множественным выбором
+          handleChange={(value) => handleFieldChange(label, value)} // handleChange будет работать с массивом
+          multiple // Для работы с множественным выбором
           size='small'
           sx={{ mb: 3 }}
         />
       );
     }
-    
+
     if (key === 'workName') {
       return (
         <Grid2 container spacing={1} sx={{ mb: 3 }} key={label}>
           <Grid2 size={7}>
             <TextFieldItem
               label={label} // Название поля
-              value={fields[key] || ''}  // Текущее значение из состояния
+              value={fields[key] || ''} // Текущее значение из состояния
               handleChange={(e) => handleFieldChange(key, e.target.value)} // Обработчик изменения
               size='small'
               fullWidth
@@ -180,7 +192,9 @@ const Calculation = () => {
             <TextFieldItem
               label='Стоимость работ'
               value={fields['workCost'] || ''} // Значение для workCost
-              handleChange={(e) => handleFieldChange('workCost', e.target.value)} // Обработчик изменения для workCost
+              handleChange={(e) =>
+                handleFieldChange('workCost', e.target.value)
+              } // Обработчик изменения для workCost
               size='small'
               type='number'
               fullWidth
@@ -189,7 +203,7 @@ const Calculation = () => {
         </Grid2>
       );
     }
-  
+
     if (key === 'materials') {
       return (
         <Grid2 container spacing={1} sx={{ mb: 3 }} key={label}>
@@ -205,7 +219,7 @@ const Calculation = () => {
           <Grid2 size={5}>
             <TextFieldItem
               label='Стоимость материалов'
-              value={fields['materialCost'] || ''}  // Если нет значения, то оставляем пустым
+              value={fields['materialCost'] || ''} // Если нет значения, то оставляем пустым
               handleChange={(e) =>
                 handleFieldChange('materialCost', e.target.value)
               }
@@ -233,12 +247,14 @@ const Calculation = () => {
         );
       case 'date':
         // Для типа 'date' форматируем дату в формате yyyy-MM-dd
-        const formattedDate = fieldValue ? new Date(fieldValue).toISOString().split('T')[0] : '';
+        const formattedDate = fieldValue
+          ? new Date(fieldValue).toISOString().split('T')[0]
+          : '';
         return (
           <TextFieldItem
             key={key}
             label={label}
-            value={formattedDate}  // Форматированная дата
+            value={formattedDate} // Форматированная дата
             handleChange={(e) => handleFieldChange(label, e.target.value)}
             fullWidth
             size='small'
@@ -247,21 +263,23 @@ const Calculation = () => {
             focused
           />
         );
-        case 'array': 
+      case 'array':
         // Для типа array (например, для "Группы работ"), выводим данные как текст, но сохраняем массив
         return (
           <TextFieldItem
             key={key}
             label={label}
-            value={Array.isArray(fieldValue) ? fieldValue.join(', ') : ''}  // Преобразуем массив в строку
+            value={Array.isArray(fieldValue) ? fieldValue.join(', ') : ''} // Преобразуем массив в строку
             handleChange={(e) => {
-              const updatedArray = e.target.value.split(',').map(item => item.trim());
+              const updatedArray = e.target.value
+                .split(',')
+                .map((item) => item.trim());
               handleFieldChange(label, updatedArray); // Записываем массив обратно
             }}
             fullWidth
             size='small'
             sx={{ mb: 3 }}
-            type="text"
+            type='text'
           />
         );
       default:
@@ -283,18 +301,18 @@ const Calculation = () => {
     try {
       // Добавляем total и totalWithVAT в fields
       const updatedFields = addTotalToFields(fields);
-  
+
       // Отправляем обновленные данные на сервер
-      const response = await fetch('http://localhost:1234/api/wagons', {
+      const response = await fetch(SERVER + '/trains', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(updatedFields),  // Отправляем обновленный объект
+        body: JSON.stringify(updatedFields), // Отправляем обновленный объект
       });
-  
+
       console.log(JSON.stringify(updatedFields)); // Для отладки
-  
+
       if (!response.ok) {
         setSnackbarMessage(response.status);
         setSnackbarSeverity('error');
@@ -306,10 +324,9 @@ const Calculation = () => {
       setSnackbarMessage('Произошла ошибка при отправке данных.');
       setSnackbarSeverity('error');
     }
-  
+
     setSnackbarOpen(true);
   };
-  
 
   return (
     <Grid2 container>
@@ -317,19 +334,19 @@ const Calculation = () => {
         <Sidebar />
       </Grid2>
       <Grid2 size={10}>
-          <Snackbar
-            open={snackbarOpen}
-            autoHideDuration={3000}
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={3000}
+          onClose={() => setSnackbarOpen(false)}
+        >
+          <Alert
             onClose={() => setSnackbarOpen(false)}
+            severity={snackbarSeverity}
+            sx={{ width: '100%' }}
           >
-            <Alert
-              onClose={() => setSnackbarOpen(false)}
-              severity={snackbarSeverity}
-              sx={{ width: '100%' }}
-            >
-              {snackbarMessage}
-            </Alert>
-          </Snackbar>
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
         <div className='content'>
           <Typography variant='h4' sx={{ mb: 2 }}>
             Калькуляция
@@ -357,7 +374,7 @@ const Calculation = () => {
         </div>
       </Grid2>
     </Grid2>
-  );  
+  );
 };
 
 export default Calculation;

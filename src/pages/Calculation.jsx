@@ -303,7 +303,7 @@ const Calculation = () => {
       const updatedFields = addTotalToFields(fields);
 
       // Отправляем обновленные данные на сервер
-      const response = await fetch(SERVER + '/trains', {
+      const response = await fetch(SERVER + '/calculations', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -3,11 +3,13 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import TableItem from '../components/TableItem';
 import ModalShowInfo from '../components/ModalShowInfo';
+import { SERVER } from '../const';
+
 
 // Функция для получения всех записей с API
 const fetchWagons = async () => {
   try {
-    const response = await fetch('http://localhost:1234/api/wagons');// Временное решение после отредактировать 
+    const response = await fetch(SERVER + '/calculations');
     if (!response.ok) {
       throw new Error('Не удалось загрузить данные с сервера');
     }

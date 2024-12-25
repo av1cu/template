@@ -68,6 +68,8 @@ const Main = () => {
     setModalInventoryListOpen(true);
   };
 
+  console.log(items);
+
   return (
     <Grid2 container>
       <Grid2 size={2}>

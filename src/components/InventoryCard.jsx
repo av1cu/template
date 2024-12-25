@@ -82,7 +82,6 @@ const InventoryCard = ({ item, handleClick }) => {
   ];
 
   const calcStyle = (status, workgroup) => {
-    console.log(workgroup);
     if (status === 'Готово') {
       return { backgroundColor: 'rgba(50, 205, 50, 0.7)', cursor: 'pointer' };
     } else if (status === 'В процессе') {

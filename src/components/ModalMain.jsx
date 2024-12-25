@@ -7,7 +7,14 @@ import { Stack } from '@mui/material';
 import { useState } from 'react';
 import { SERVER } from '../const';
 
-const ModalMain = ({ open, handleClose, id, deleteTrain, data = [] }) => {
+const ModalMain = ({
+  open,
+  handleClose,
+  id,
+  deleteTrain,
+  handleWorkGroupStatusChange,
+  data = [],
+}) => {
   const navigate = useNavigate(); // Хук для навигации
   const [currentWorkGroup, setCurrentWorkGroup] = useState('');
   const [showOptions, setShowOptions] = useState(false);
@@ -26,61 +33,6 @@ const ModalMain = ({ open, handleClose, id, deleteTrain, data = [] }) => {
     setShowOptions(true);
   };
 
-  const handleWorkGroupStatusChange = async (status) => {
-    const workGroups = data.find((row) => row.label === 'Группа работ');
-    if (Array.isArray(workGroups)) {
-      const sorted = [
-        currentWorkGroup,
-        ...workGroups.filter((item) => item !== currentWorkGroup),
-      ];
-      const dataToSend = data.filter((row) => row.label !== 'Группа работ');
-      dataToSend.forEach((row) => {
-        if (row.label === 'Статус') {
-          row.value = status;
-        }
-      });
-
-      const response = await fetch(SERVER + '/trains/' + id, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ...dataToSend, ...sorted }),
-      });
-      if (response.ok) {
-        const result = await response.json();
-        console.log(result);
-        alert('Статус обновлен');
-      } else {
-        const error = await response.text();
-        alert(`Ошибка: ${error}`);
-      }
-    } else {
-      const dataToSend = data;
-      dataToSend.forEach((row) => {
-        if (row.label === 'Статус') {
-          row.value = status;
-        }
-      });
-
-      const response = await fetch(SERVER + '/trains/' + id, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(dataToSend),
-      });
-      if (response.ok) {
-        const result = await response.json();
-        console.log(result);
-        alert('Статус обновлен');
-      } else {
-        const error = await response.text();
-        alert(`Ошибка: ${error}`);
-      }
-    }
-  };
-
   return (
     <ModalItem open={open} handleClose={handleClose} title='Информация'>
       {data.map((row, index) => {
@@ -88,63 +40,76 @@ const ModalMain = ({ open, handleClose, id, deleteTrain, data = [] }) => {
           if (Array.isArray(row.value)) {
             return (
               <div>
-                <Stack direction='row' spacing={1}>
+                <Stack direction='row' spacing={1} mb={2}>
                   {row.value.map((val) => (
-                    <ButtonItem
-                      variant='small'
-                      handleChange={() => handleSelectWorkgroup(val)}
-                    >
-                      {val}
-                    </ButtonItem>
+                    <div>
+                      <ButtonItem
+                        size='small'
+                        handleChange={() => handleSelectWorkgroup(val)}
+                        label={val}
+                        variant='contained'
+                        sx={{ mb: 1 }}
+                      />
+                      {showOptions && currentWorkGroup === val && (
+                        <Stack direction='row' spacing={1}>
+                          <ButtonItem
+                            size='small'
+                            variant='outlined'
+                            handleChange={() =>
+                              handleWorkGroupStatusChange(
+                                'В процессе',
+                                currentWorkGroup
+                              )
+                            }
+                            label='В активе'
+                          />
+                          <ButtonItem
+                            size='small'
+                            variant='outlined'
+                            handleChange={() =>
+                              handleWorkGroupStatusChange(
+                                'В ожидании',
+                                currentWorkGroup
+                              )
+                            }
+                            label='Готово'
+                          />
+                        </Stack>
+                      )}
+                    </div>
                   ))}
                 </Stack>
-                {showOptions && (
-                  <Stack direction='row' spacing={1}>
-                    <ButtonItem
-                      variant='small'
-                      handleChange={() =>
-                        handleWorkGroupStatusChange('В процессе')
-                      }
-                    >
-                      В активе
-                    </ButtonItem>
-                    <ButtonItem
-                      variant='small'
-                      handleChange={() => handleWorkGroupStatusChange('Готово')}
-                    >
-                      Готово
-                    </ButtonItem>
-                  </Stack>
-                )}
               </div>
             );
           } else {
             return (
               <div>
-                <Stack direction='row' spacing={1}>
+                <Stack direction='row' spacing={1} mb={1}>
                   <ButtonItem
-                    variant='small'
+                    size='small'
+                    variant='contained'
                     handleChange={() => handleSelectWorkgroup(row.value)}
-                  >
-                    {row.value}
-                  </ButtonItem>
+                    label={row.value}
+                  />
                 </Stack>
                 {showOptions && (
-                  <Stack direction='row' spacing={1}>
+                  <Stack direction='row' spacing={1} mb={2}>
                     <ButtonItem
-                      variant='small'
+                      size='small'
+                      variant='outlined'
                       handleChange={() =>
                         handleWorkGroupStatusChange('В процессе')
                       }
-                    >
-                      В активе
-                    </ButtonItem>
+                      label='В активе'
+                    />
                     <ButtonItem
-                      variant='small'
-                      handleChange={() => handleWorkGroupStatusChange('Готово')}
-                    >
-                      Готово
-                    </ButtonItem>
+                      size='small'
+                      variant='outlined'
+                      handleChange={() =>
+                        handleWorkGroupStatusChange('В ожидании')
+                      }
+                      label='Готово'
+                    />
                   </Stack>
                 )}
               </div>

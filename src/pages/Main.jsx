@@ -109,20 +109,21 @@ const Main = () => {
         );
         dataToSend.forEach((row) => {
           if (row.label === 'Статус') {
-            row.value = status;
+            row.value = status === 'Готово' ? 'В ожидании' : status;
           }
         });
+        const groupStatus = [{ value: currentWorkGroup, status }];
+        const mapped = mapDataToKeys([
+          ...dataToSend,
+          { label: 'Группа работ', value: sorted },
+        ]);
+        mapped.workgroupStatus = groupStatus;
         const response = await fetch(SERVER + '/trains/' + currentItem.id, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(
-            mapDataToKeys([
-              ...dataToSend,
-              { label: 'Группа работ', value: sorted },
-            ])
-          ),
+          body: JSON.stringify(mapped),
         });
         if (response.ok) {
           const result = await response.json();
@@ -135,15 +136,16 @@ const Main = () => {
         }
       } else {
         const dataToSend = currentItem;
-        console.log(dataToSend.data);
+        const groupStatus = [{ value: currentWorkGroup, status }];
         dataToSend.data.forEach((row) => {
           if (row.label === 'Статус') {
-            row.value = status;
+            row.value = status === 'Готово' ? 'В ожидании' : status;
           }
           if (row.label === 'Группа работ') {
             row.value = [row.value];
           }
         });
+        dataToSend.data.workgroupStatus = groupStatus;
 
         const response = await fetch(SERVER + '/trains/' + currentItem.id, {
           method: 'PUT',
@@ -152,9 +154,9 @@ const Main = () => {
           },
           body: JSON.stringify(mapDataToKeys(dataToSend.data)),
         });
+        console.log(JSON.stringify(mapDataToKeys(dataToSend.data)));
         if (response.ok) {
           const result = await response.json();
-          console.log(result);
           fetchTrains();
           alert('Статус обновлен');
         } else {
@@ -163,7 +165,6 @@ const Main = () => {
         }
       }
     } catch (e) {
-      console.log(e);
       alert('Что-то пошло не так');
     }
   };

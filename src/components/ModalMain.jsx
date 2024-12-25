@@ -68,7 +68,7 @@ const ModalMain = ({
                             variant='outlined'
                             handleChange={() =>
                               handleWorkGroupStatusChange(
-                                'В ожидании',
+                                'Готово',
                                 currentWorkGroup
                               )
                             }
@@ -105,9 +105,7 @@ const ModalMain = ({
                     <ButtonItem
                       size='small'
                       variant='outlined'
-                      handleChange={() =>
-                        handleWorkGroupStatusChange('В ожидании')
-                      }
+                      handleChange={() => handleWorkGroupStatusChange('Готово')}
                       label='Готово'
                     />
                   </Stack>

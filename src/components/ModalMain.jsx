@@ -84,39 +84,72 @@ const ModalMain = ({ open, handleClose, id, deleteTrain, data = [] }) => {
   return (
     <ModalItem open={open} handleClose={handleClose} title='Информация'>
       {data.map((row, index) => {
-        if (Array.isArray(row.value)) {
-          return (
-            <div>
-              <Stack direction='row' spacing={1}>
-                {row.value.map((val) => (
-                  <ButtonItem
-                    variant='small'
-                    handleChange={() => handleSelectWorkgroup(val)}
-                  >
-                    {val}
-                  </ButtonItem>
-                ))}
-              </Stack>
-              {showOptions && (
+        if (row.label === 'Группа работ') {
+          if (Array.isArray(row.value)) {
+            return (
+              <div>
+                <Stack direction='row' spacing={1}>
+                  {row.value.map((val) => (
+                    <ButtonItem
+                      variant='small'
+                      handleChange={() => handleSelectWorkgroup(val)}
+                    >
+                      {val}
+                    </ButtonItem>
+                  ))}
+                </Stack>
+                {showOptions && (
+                  <Stack direction='row' spacing={1}>
+                    <ButtonItem
+                      variant='small'
+                      handleChange={() =>
+                        handleWorkGroupStatusChange('В процессе')
+                      }
+                    >
+                      В активе
+                    </ButtonItem>
+                    <ButtonItem
+                      variant='small'
+                      handleChange={() => handleWorkGroupStatusChange('Готово')}
+                    >
+                      Готово
+                    </ButtonItem>
+                  </Stack>
+                )}
+              </div>
+            );
+          } else {
+            return (
+              <div>
                 <Stack direction='row' spacing={1}>
                   <ButtonItem
                     variant='small'
-                    handleChange={() =>
-                      handleWorkGroupStatusChange('В процессе')
-                    }
+                    handleChange={() => handleSelectWorkgroup(row.value)}
                   >
-                    В активе
-                  </ButtonItem>
-                  <ButtonItem
-                    variant='small'
-                    handleChange={() => handleWorkGroupStatusChange('В')}
-                  >
-                    Готово
+                    {row.value}
                   </ButtonItem>
                 </Stack>
-              )}
-            </div>
-          );
+                {showOptions && (
+                  <Stack direction='row' spacing={1}>
+                    <ButtonItem
+                      variant='small'
+                      handleChange={() =>
+                        handleWorkGroupStatusChange('В процессе')
+                      }
+                    >
+                      В активе
+                    </ButtonItem>
+                    <ButtonItem
+                      variant='small'
+                      handleChange={() => handleWorkGroupStatusChange('Готово')}
+                    >
+                      Готово
+                    </ButtonItem>
+                  </Stack>
+                )}
+              </div>
+            );
+          }
         }
         const value = row.value; // Если массив, объединяем через запятую
         return (

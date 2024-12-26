@@ -9,17 +9,18 @@ import ModalMain from '../components/ModalMain';
 import { SERVER } from '../const';
 
 const labels = [
-  { key: 'wagonnumber', label: 'Номер вагона', type: 'text' },
-  { key: 'wagontype', label: 'Тип вагона', type: 'select' },
+  { key: 'wagonNumber', label: 'Номер вагона', type: 'text' },
+  { key: 'wagonType', label: 'Тип вагона', type: 'select' },
   { key: 'customer', label: 'Заказчик', type: 'text' },
   { key: 'contract', label: 'Договор', type: 'text' },
-  { key: 'repairstart', label: 'Начало ремонта', type: 'date' },
-  { key: 'repairend', label: 'Конец ремонта', type: 'date' },
-  { key: 'repairtype', label: 'Тип ремонта', type: 'select' },
+  { key: 'repairStart', label: 'Начало ремонта', type: 'date' },
+  { key: 'repairEnd', label: 'Конец ремонта', type: 'date' },
+  { key: 'repairType', label: 'Тип ремонта', type: 'select' },
   { key: 'workgroup', label: 'Группа работ', type: 'select' },
   { key: 'workname', label: 'Наименование работ', type: 'text' },
   { key: 'executor', label: 'Исполнитель', type: 'select' },
   { key: 'status', label: 'Статус', type: 'text' },
+  { key: 'workgroupStatus', label: 'Статус группы работ', type: 'text' },
 ];
 
 const Main = () => {
@@ -50,7 +51,7 @@ const Main = () => {
       setItems(trains);
     } catch (error) {
       console.error('Ошибка при получении списка поездов:', error);
-      throw error; // Пробрасываем ошибку, чтобы её можно было обработать выше
+      // throw error; // Пробрасываем ошибку, чтобы её можно было обработать выше
     }
   }
 
@@ -107,12 +108,34 @@ const Main = () => {
         const dataToSend = currentItem.data.filter(
           (row) => row.label !== 'Группа работ'
         );
+        const workStatuses = currentItem.data.find(
+          (row) => row.label === 'Статус группы работ'
+        );
+        const groupStatus =
+          workStatuses.value === 'Нет статусов'
+            ? [{ value: currentWorkGroup, status }]
+            : workStatuses.value.map((item) =>
+                item.value === currentWorkGroup
+                  ? { value: currentWorkGroup, status }
+                  : item
+              );
         dataToSend.forEach((row) => {
           if (row.label === 'Статус') {
-            row.value = status === 'Готово' ? 'В ожидании' : status;
+            if (
+              status === 'Готово' &&
+              groupStatus.every((item) => item.status === 'Готово') &&
+              groupStatus.length === sorted.length
+            ) {
+              row.value = 'Готово';
+            } else if (status === 'Готово') {
+              row.value = 'В ожидании';
+            } else if (status === 'Статус группы работ') {
+              row.value = groupStatus;
+            } else {
+              row.value = status;
+            }
           }
         });
-        const groupStatus = [{ value: currentWorkGroup, status }];
         const mapped = mapDataToKeys([
           ...dataToSend,
           { label: 'Группа работ', value: sorted },
@@ -139,13 +162,16 @@ const Main = () => {
         const groupStatus = [{ value: currentWorkGroup, status }];
         dataToSend.data.forEach((row) => {
           if (row.label === 'Статус') {
-            row.value = status === 'Готово' ? 'В ожидании' : status;
+            // row.value = status === 'Готово' ? 'В ожидании' : status;
+            row.value = status;
           }
           if (row.label === 'Группа работ') {
             row.value = [row.value];
           }
+          if (row.label === 'Статус группы работ') {
+            row.value = groupStatus;
+          }
         });
-        dataToSend.data.workgroupStatus = groupStatus;
 
         const response = await fetch(SERVER + '/trains/' + currentItem.id, {
           method: 'PUT',
@@ -154,7 +180,6 @@ const Main = () => {
           },
           body: JSON.stringify(mapDataToKeys(dataToSend.data)),
         });
-        console.log(JSON.stringify(mapDataToKeys(dataToSend.data)));
         if (response.ok) {
           const result = await response.json();
           fetchTrains();
@@ -165,6 +190,7 @@ const Main = () => {
         }
       }
     } catch (e) {
+      console.log(e);
       alert('Что-то пошло не так');
     }
   };

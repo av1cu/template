@@ -33,106 +33,131 @@ const ModalMain = ({
     setShowOptions(true);
   };
 
+  const calcVariant = (val) => {
+    const statuses = data.find(
+      (row) => row.label === 'Статус группы работ'
+    ).value;
+    if (statuses !== 'Нет статусов') {
+      const status = statuses.find((row) => row.value === val);
+      if (status && status.status === 'Готово') {
+        return 'success';
+      }
+      return 'primary';
+    }
+  };
+
   return (
     <ModalItem open={open} handleClose={handleClose} title='Информация'>
       {data.map((row, index) => {
-        if (row.label === 'Группа работ') {
-          if (Array.isArray(row.value)) {
-            return (
-              <div>
-                <Stack direction='row' spacing={1} mb={2}>
-                  {row.value.map((val) => (
-                    <div>
-                      <ButtonItem
-                        size='small'
-                        handleChange={() => handleSelectWorkgroup(val)}
-                        label={val}
-                        variant='contained'
-                        sx={{ mb: 1 }}
-                      />
-                      {showOptions && currentWorkGroup === val && (
-                        <Stack direction='row' spacing={1}>
-                          <ButtonItem
-                            size='small'
-                            variant='outlined'
-                            handleChange={() =>
-                              handleWorkGroupStatusChange(
-                                'В процессе',
-                                currentWorkGroup
-                              )
-                            }
-                            label='В активе'
-                          />
-                          <ButtonItem
-                            size='small'
-                            variant='outlined'
-                            handleChange={() =>
-                              handleWorkGroupStatusChange(
-                                'Готово',
-                                currentWorkGroup
-                              )
-                            }
-                            label='Готово'
-                          />
-                        </Stack>
-                      )}
-                    </div>
-                  ))}
-                </Stack>
-              </div>
-            );
-          } else {
-            return (
-              <div>
-                <Stack direction='row' spacing={1} mb={1}>
-                  <ButtonItem
-                    size='small'
-                    variant='contained'
-                    handleChange={() => handleSelectWorkgroup(row.value)}
-                    label={row.value}
-                  />
-                </Stack>
-                {showOptions && (
+        if (row.label !== 'Статус группы работ') {
+          if (row.label === 'Группа работ') {
+            if (Array.isArray(row.value)) {
+              return (
+                <div>
                   <Stack direction='row' spacing={1} mb={2}>
+                    {row.value.map((val) => (
+                      <div>
+                        <ButtonItem
+                          size='small'
+                          handleChange={() => handleSelectWorkgroup(val)}
+                          label={val}
+                          color={calcVariant(val)}
+                          variant='outlined'
+                          sx={{ mb: 1 }}
+                        />
+                        {showOptions && currentWorkGroup === val && (
+                          <Stack direction='row' spacing={1}>
+                            <ButtonItem
+                              size='small'
+                              variant='outlined'
+                              handleChange={() =>
+                                handleWorkGroupStatusChange(
+                                  'В процессе',
+                                  currentWorkGroup
+                                )
+                              }
+                              label='В активе'
+                            />
+                            <ButtonItem
+                              size='small'
+                              variant='outlined'
+                              handleChange={() =>
+                                handleWorkGroupStatusChange(
+                                  'Готово',
+                                  currentWorkGroup
+                                )
+                              }
+                              label='Готово'
+                            />
+                          </Stack>
+                        )}
+                      </div>
+                    ))}
+                  </Stack>
+                </div>
+              );
+            } else {
+              return (
+                <div>
+                  <Stack direction='row' spacing={1} mb={1}>
                     <ButtonItem
                       size='small'
                       variant='outlined'
-                      handleChange={() =>
-                        handleWorkGroupStatusChange('В процессе')
-                      }
-                      label='В активе'
-                    />
-                    <ButtonItem
-                      size='small'
-                      variant='outlined'
-                      handleChange={() => handleWorkGroupStatusChange('Готово')}
-                      label='Готово'
+                      handleChange={() => handleSelectWorkgroup(row.value)}
+                      label={row.value}
+                      color={calcVariant(row.value)}
                     />
                   </Stack>
-                )}
-              </div>
-            );
-          }
-        }
-        const value = row.value; // Если массив, объединяем через запятую
-        return (
-          <TextFieldItem
-            key={index}
-            label={row.label}
-            value={
-              row.label === 'Начало ремонта' ||
-              row.label === 'Конец ремонта' ||
-              row.label === 'Дата'
-                ? formatDate(value)
-                : value
+                  {showOptions && (
+                    <Stack direction='row' spacing={1} mb={2}>
+                      <ButtonItem
+                        size='small'
+                        variant='outlined'
+                        handleChange={() =>
+                          handleWorkGroupStatusChange(
+                            'В процессе',
+                            currentWorkGroup
+                          )
+                        }
+                        label='В активе'
+                      />
+                      <ButtonItem
+                        size='small'
+                        variant='outlined'
+                        handleChange={() =>
+                          handleWorkGroupStatusChange(
+                            'Готово',
+                            currentWorkGroup
+                          )
+                        }
+                        label='Готово'
+                      />
+                    </Stack>
+                  )}
+                </div>
+              );
             }
-            handleChange={() => {}}
-            fullWidth
-            size='small'
-            sx={{ mb: 2 }}
-            disabled
-          />
-        );
+          }
+          const value = row.value; // Если массив, объединяем через запятую
+          return (
+            <TextFieldItem
+              key={index}
+              label={row.label}
+              value={
+                row.label === 'Начало ремонта' ||
+                row.label === 'Конец ремонта' ||
+                row.label === 'Дата'
+                  ? formatDate(value)
+                  : value
+              }
+              handleChange={() => {}}
+              fullWidth
+              size='small'
+              sx={{ mb: 2 }}
+              disabled
+            />
+          );
+        }
       })}
       <div
         style={{

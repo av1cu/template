@@ -100,50 +100,47 @@ const Main = () => {
 
   const handleWorkGroupStatusChange = async (status, currentWorkGroup) => {
     try {
-      const workGroups = currentItem.data.find(
-        (row) => row.label === 'Группа работ'
-      );
+      const workGroups = currentItem.data.find((row) => row.label === 'Группа работ');
+      
       if (Array.isArray(workGroups.value)) {
+        // Если есть несколько групп, сортируем их
         const sorted = [
           currentWorkGroup,
           ...workGroups.value.filter((item) => item !== currentWorkGroup),
         ];
-        const dataToSend = currentItem.data.filter(
-          (row) => row.label !== 'Группа работ'
-        );
-        const workStatuses = currentItem.data.find(
-          (row) => row.label === 'Статус группы работ'
-        );
-        const groupStatus =
-          workStatuses.value === 'Нет статусов'
-            ? [{ value: currentWorkGroup, status }]
-            : workStatuses.value.map((item) =>
-                item.value === currentWorkGroup
-                  ? { value: currentWorkGroup, status }
-                  : item
-              );
+  
+        // Обновляем данные о группе работ
+        const dataToSend = currentItem.data.filter((row) => row.label !== 'Группа работ');
+        const workStatuses = currentItem.data.find((row) => row.label === 'Статус группы работ');
+        
+        const groupStatus = workStatuses.value === 'Нет статусов'
+          ? [{ value: currentWorkGroup, status }]
+          : workStatuses.value.map((item) =>
+              item.value === currentWorkGroup ? { value: currentWorkGroup, status } : item
+            );
+  
+        // Логика для изменения статуса вагона
         dataToSend.forEach((row) => {
           if (row.label === 'Статус') {
-            if (
-              status === 'Готово' &&
-              groupStatus.every((item) => item.status === 'Готово') &&
-              groupStatus.length === sorted.length
-            ) {
+            if (status === 'Готово' && groupStatus.every((item) => item.status === 'Готово') && groupStatus.length === sorted.length) {
+              // Если все группы работ готовы, ставим статус вагона как 'Готово'
               row.value = 'Готово';
             } else if (status === 'Готово') {
+              // Если хотя бы одна группа не готова, ставим статус вагона как 'В ожидании'
               row.value = 'В ожидании';
-            } else if (status === 'Статус группы работ') {
-              row.value = groupStatus;
             } else {
-              row.value = status;
+              row.value = status; // Иначе, статус вагона обновляется в зависимости от статуса группы работ
             }
           }
         });
+  
+        // Обновляем данные с новой группой работ
         const mapped = mapDataToKeys([
           ...dataToSend,
           { label: 'Группа работ', value: sorted },
         ]);
         mapped.workgroupStatus = groupStatus;
+  
         const response = await fetch(SERVER + '/trains/' + currentItem.id, {
           method: 'PUT',
           headers: {
@@ -151,6 +148,7 @@ const Main = () => {
           },
           body: JSON.stringify(mapped),
         });
+  
         if (response.ok) {
           const result = await response.json();
           console.log(result);
@@ -161,11 +159,11 @@ const Main = () => {
           alert(`Ошибка: ${error}`);
         }
       } else {
+        // Если группа работ состоит из одного элемента
         const dataToSend = currentItem;
         const groupStatus = [{ value: currentWorkGroup, status }];
         dataToSend.data.forEach((row) => {
           if (row.label === 'Статус') {
-            // row.value = status === 'Готово' ? 'В ожидании' : status;
             row.value = status;
           }
           if (row.label === 'Группа работ') {
@@ -175,7 +173,7 @@ const Main = () => {
             row.value = groupStatus;
           }
         });
-
+  
         const response = await fetch(SERVER + '/trains/' + currentItem.id, {
           method: 'PUT',
           headers: {
@@ -183,6 +181,7 @@ const Main = () => {
           },
           body: JSON.stringify(mapDataToKeys(dataToSend.data)),
         });
+  
         if (response.ok) {
           const result = await response.json();
           fetchTrains();
@@ -197,6 +196,7 @@ const Main = () => {
       alert('Что-то пошло не так');
     }
   };
+  
 
   const handleOpenInventoryList = (item) => {
     setCurrentItem(item);
@@ -216,37 +216,49 @@ const Main = () => {
             Главная
           </Typography>
   
-          <Typography variant="h6" sx={{ mb: 1 }}>
-            Фильтр по статусу:
-          </Typography>
-  
-          <FormControl fullWidth>
-            <InputLabel id="status-select-label">Выберите статус</InputLabel>
-            <Select
-              labelId="status-select-label"
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-              label="Выберите статус"
-              sx={{
-                backgroundColor: '#4d4d4d', // серый фон для поля выбора
-                borderRadius: 1, // скругленные углы
-                '& .MuiSelect-icon': {
-                  color: 'gray', // иконка стрелки в селекторе
-                },
-                '& .MuiOutlinedInput-notchedOutline': {
-                  borderColor: '#aaa', // цвет границы
-                },
-                '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: '#555', // цвет границы при наведении
-                },
-              }}
-            >
-              <MenuItem value="">Все</MenuItem>
-              <MenuItem value="В процессе">В процессе</MenuItem>
-              <MenuItem value="Не начато">Не начато</MenuItem>
-              <MenuItem value="Готово">Готово</MenuItem>
-            </Select>
-          </FormControl>
+          <FormControl
+  sx={{
+    width: 160,
+    position: 'absolute',
+    top: 12,
+    right: 64,
+  }}
+  size="small"
+>
+  <InputLabel 
+    id="status-select-label"
+    sx={{
+      color: '#ddd', // Светлый текст для контраста
+      '&.Mui-focused': { color: '#fff' }, // Подсветка при фокусе
+    }}
+    shrink // Фикс бага с проваливанием
+  >
+    Статус
+  </InputLabel>
+  <Select
+    labelId="status-select-label"
+    value={selectedStatus || ''}
+    onChange={(e) => setSelectedStatus(e.target.value || null)}
+    displayEmpty
+    sx={{
+      backgroundColor: '#333',
+      borderRadius: 1,
+      color: '#fff',
+      transition: 'all 0.2s ease-in-out',
+      '& .MuiSelect-icon': { color: 'gray' },
+      '& .MuiOutlinedInput-notchedOutline': { borderColor: '#888' },
+      '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#bbb' },
+      '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#fff' },
+    }}
+  >
+    <MenuItem value="">Все</MenuItem>
+    <MenuItem value="В процессе">В процессе</MenuItem>
+    <MenuItem value="Не начато">Не начато</MenuItem>
+    <MenuItem value="Готово">Готово</MenuItem>
+  </Select>
+</FormControl>
+
+
   
           {/* Circular Button with Custom Image */}
           <IconButton
@@ -272,7 +284,7 @@ const Main = () => {
               .filter((item) => {
                 // Находим статус в data каждого элемента
                 const statusItem = item.data.find((entry) => entry.label === 'Статус');
-                const itemStatus = statusItem ? statusItem.value : null;
+                const itemStatus = statusItem ? statusItem.value : null;  
   
                 return selectedStatus ? itemStatus === selectedStatus : true;
               })

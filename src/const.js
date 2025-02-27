@@ -1,1 +1,1 @@
-export const SERVER = 'https://template-t8kx.onrender.com';
+export const SERVER = 'https://storage-backend-5fin.onrender.com';

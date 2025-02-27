@@ -2,14 +2,24 @@ import { Card, CardContent, Stack, Typography, Box } from '@mui/material';
 import React from 'react';
 import PasIcon from './../assets/img/FCDD32C4-55B5-4C59-8717-A15A1AACED23-removebg-preview.png';
 import GruzIcon from './../assets/img/FD504E0A-3EC0-4EAE-AF86-4845AFE7BEB1-removebg-preview.png';
+import CisternIcon from "./../assets/img/cistern.png";
+import HopperIcon from "./../assets/img/hopper.png";
 import formatDate from '../utils/formatDate';
+
+const wagonIcons = {
+  Пассажирский: PasIcon,
+  Грузовой: GruzIcon,
+  Цистерна: CisternIcon,
+  Хоппер: HopperIcon,
+};
 
 const InventoryCard = ({ item, handleClick }) => {
   const { data } = item;
   const wagonNumber = data.find((d) => d.label === 'Номер вагона').value;
   const date = data.find((d) => d.label === 'Дата').value;
   const status = data.find((d) => d.label === 'Статус').value;
-  const wagonType = data.find((d) => d.label === 'Тип вагона').value;
+  const wagonType = data.find((d) => d.label === "Тип вагона").value;
+
   
   // Новый объект с группами работ и их статусами
   const groupStatuses = data.find((d) => d.label === 'Статус группы работ')?.value || [];
@@ -64,9 +74,9 @@ const InventoryCard = ({ item, handleClick }) => {
           <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
             <Typography variant="h6">{`Вагон №${wagonNumber}`}</Typography>
             <img
-              src={wagonType === 'Пассажирский' ? PasIcon : GruzIcon}
-              alt={`${wagonType} Icon`}
-              style={{ width: '50px', height: '50px' }}
+               src={wagonIcons[wagonType] || GruzIcon} // Если тип не найден, ставим грузовой
+               alt={`${wagonType} Icon`}
+               style={{ width: "50px", height: "50px" }}
             />
           </Stack>
           <Typography>Дата: {formatDate(date)}</Typography>

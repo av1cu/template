@@ -42,11 +42,3 @@
   .closeButton:hover {
     background-color: rgba(255, 255, 255, 0.2);
   }
-  
-  /* Контейнер для кнопок */
-  .buttonContainer {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-  }
-  

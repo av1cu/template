@@ -4,41 +4,43 @@
     justify-content: center;
     align-items: center;
     padding: 20px;
-    position: fixed;
+    position: fixed; /* Фиксируем окно на экране */
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 9999;
-    background: rgba(0, 0, 0, 0.5);
-    overflow-x: hidden; /* Отключаем горизонтальную прокрутку */
+    z-index: 9999; /* Окно будет на переднем плане */
+    background: rgba(0, 0, 0, 0.5); /* Темный фон */
   }
   
   /* Стиль для контента модального окна */
   .modalContent {
-    position: relative;
+    position: relative; /* Это необходимо для правильного позиционирования кнопки X */
     background-color: rgb(27, 27, 27);
     padding: 20px;
     border-radius: 8px;
-    width: 400px;
+    width: 400px; /* Ширина модального окна */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-height: 80vh;
-    overflow-y: auto; /* Вертикальная прокрутка, если контента слишком много */
-    overflow-x: hidden; /* Отключаем горизонтальную прокрутку */
+    max-height: 80vh; /* Ограничиваем высоту окна */
+    overflow-y: auto; /* Если контента больше, будет прокрутка */
   }
   
   /* Стиль для кнопки "X" */
   .closeButton {
     position: absolute;
-    top: 10px;
-    right: 20px;
-    background-color: transparent;
-    color: white;
-    border: none;
-    cursor: pointer;
-    z-index: 100;
+    top: 10px; /* 10px от верхнего края модального окна */
+    left: 10px; /* 10px от правого края модального окна */
+    background-color: transparent; /* Убираем фон */
+    color: white; /* Белый цвет для иконки */
+    border: none; /* Убираем рамку */
+    cursor: pointer; /* Курсор в виде руки */
+    z-index: 100; /* Убедимся, что кнопка всегда будет поверх других элементов */
   }
   
-  .closeButton:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+  /* Контейнер для кнопок */
+  .buttonContainer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
   }
+  

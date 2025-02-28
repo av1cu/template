@@ -73,15 +73,6 @@ const handleSubmit = async () => {
   return (
     <Modal open={open} onClose={handleClose} className={styles.modal}>
       <Box className={styles.modalContent}>
-        {/* Кнопка закрытия модального окна */}
-        <IconButton
-          edge="end"
-          color="inherit"
-          onClick={handleClose}
-          className={styles.closeButton}
-        >
-          <CloseIcon />
-        </IconButton>
 
         <Typography variant="h6" gutterBottom>
           Сменить пароль

@@ -44,7 +44,7 @@ useEffect(() => {
         if (res.status === 401) {
           // Если токен просрочен или отсутствует
           console.error('Unauthorized, redirecting to login');
-          window.location.href = '/#/auth/login'; // Перенаправление на страницу логина
+          window.location.href = '/template/#/auth/login'; // Перенаправление на страницу логина
           return; // Прерываем выполнение запроса
         }
         return res.json();
@@ -107,7 +107,7 @@ useEffect(() => {
         if (res.status === 401) {
           // Если токен просрочен или отсутствует
           console.error('Unauthorized, redirecting to login');
-          window.location.href = '/#/auth/login'; // Перенаправление на страницу логина
+          window.location.href = '/template/#/auth/login'; // Перенаправление на страницу логина
           return; // Прерываем выполнение запроса
         }
         return res.json();
@@ -138,7 +138,7 @@ const handleDownloadFile = () => {
       if (response.status === 401) {
         // Если токен просрочен или отсутствует
         console.error('Unauthorized, redirecting to login');
-        window.location.href = '/#/auth/login'; // Перенаправление на страницу логина
+        window.location.href = '/template/#/auth/login'; // Перенаправление на страницу логина
         return; // Прерываем выполнение запроса
       }
       if (!response.ok) throw new Error("Файл не найден");
@@ -172,7 +172,7 @@ const handleDeleteFile = () => {
       if (res.status === 401) {
         // Если токен просрочен или отсутствует
         console.error('Unauthorized, redirecting to login');
-        window.location.href = '/#/auth/login'; // Перенаправление на страницу логина
+        window.location.href = '/template/#/auth/login'; // Перенаправление на страницу логина
         return; // Прерываем выполнение запроса
       }
       return res.json();

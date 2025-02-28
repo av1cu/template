@@ -21,7 +21,7 @@ const fetchWagons = async () => {
     if (response.status === 401) {
       // Если токен просрочен или отсутствует
       console.error('Unauthorized, redirecting to login');
-      window.location.href = '/#/auth/login'; // Перенаправление на страницу логина
+      window.location.href = '/template/#/auth/login'; // Перенаправление на страницу логина
       return; // Прерываем выполнение запроса
     }
 

@@ -51,7 +51,7 @@ const Main = () => {
       if (response.status === 401) {
         // Если токен просрочен или отсутствует
         console.error('Unauthorized, redirecting to login');
-        window.location.href = '/#/auth/login'; // Перенаправление на страницу логина
+        window.location.href = '/template/#/auth/login'; // Перенаправление на страницу логина
       }
       const trains = await response.json();
       setItems(trains);
@@ -81,7 +81,7 @@ const Main = () => {
       } else if (response.status === 401) {
         // Если токен просрочен или отсутствует
         console.error('Unauthorized, redirecting to login');
-        window.location.href = '/#/auth/login'; // Перенаправление на страницу логина
+        window.location.href = '/template/#/auth/login'; // Перенаправление на страницу логина
       } else {
         console.error('Failed to delete train');
       }
@@ -167,7 +167,7 @@ const Main = () => {
         } else if (response.status === 401) {
           // Если токен просрочен или отсутствует
           console.error('Unauthorized, redirecting to login');
-          window.location.href = '/#/auth/login'; // Перенаправление на страницу логина
+          window.location.href = '/template/#/auth/login'; // Перенаправление на страницу логина
         } else {
           const error = await response.text();
           alert(`Ошибка: ${error}`);
@@ -206,7 +206,7 @@ const Main = () => {
         } else if (response.status === 401) {
           // Если токен просрочен или отсутствует
           console.error('Unauthorized, redirecting to login');
-          window.location.href = '/#/auth/login'; // Перенаправление на страницу логина
+          window.location.href = '/template/#/auth/login'; // Перенаправление на страницу логина
         } else {
           const error = await response.text();
           alert(`Ошибка: ${error}`);

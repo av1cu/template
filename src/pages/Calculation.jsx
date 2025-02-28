@@ -298,21 +298,31 @@ const Calculation = () => {
     }
   };
   const handleSave = async () => {
+    const token = localStorage.getItem('authToken');
+  
     try {
       // Добавляем total и totalWithVAT в fields
       const updatedFields = addTotalToFields(fields);
-
+  
       // Отправляем обновленные данные на сервер
       const response = await fetch(SERVER + '/calculations', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, // Добавляем токен
         },
         body: JSON.stringify(updatedFields), // Отправляем обновленный объект
       });
-
+  
       console.log(JSON.stringify(updatedFields)); // Для отладки
-
+  
+      if (response.status === 401) {
+        // Если токен просрочен или отсутствует
+        console.error('Unauthorized, redirecting to login');
+        window.location.href = '/#/auth/login'; // Перенаправление на страницу логина
+        return; // Прерываем выполнение запроса
+      }
+  
       if (!response.ok) {
         setSnackbarMessage(response.status);
         setSnackbarSeverity('error');
@@ -324,9 +334,10 @@ const Calculation = () => {
       setSnackbarMessage('Произошла ошибка при отправке данных.');
       setSnackbarSeverity('error');
     }
-
+  
     setSnackbarOpen(true);
   };
+  
 
   return (
     <Grid2 container>

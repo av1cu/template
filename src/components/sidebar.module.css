@@ -1,6 +1,50 @@
+/* sidebar.module.css */
+
+/* Основной контейнер Sidebar */
 .sidebar {
-  height: 100vh;
-  overflow-y: scroll;
-  scrollbar-width: none;
-  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 10px;
+  position: relative; /* Чтобы дочерние элементы могли позиционироваться относительно Sidebar */
+}
+
+/* Размещение кнопки редактирования аккаунта внизу справа */
+.accountButtonWrapper {
+  position: absolute; /* Фиксируем кнопку */
+  bottom: 20px; /* Отступ от нижней границы */
+  left: 20px; /* Отступ от правой границы */
+}
+
+/* Стиль для кнопки редактирования аккаунта */
+.accountButton {
+  background-color: #007BFF; /* Синий фон кнопки */
+  color: white; /* Белый цвет текста */
+  border: none; /* Без границ */
+  border-radius: 50%; /* Округлая кнопка */
+  padding: 8px; /* Уменьшенные отступы для уменьшения размера */
+  width: 40px; /* Ширина кнопки */
+  height: 40px; /* Высота кнопки */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Плавные переходы для фона и масштаба */
+  cursor: pointer; /* Курсор на кнопке - указатель */
+}
+
+/* Эффект при наведении на кнопку */
+.accountButton:hover {
+  background-color: #0056b3; /* Темно-синий фон при наведении */
+  transform: scale(1.1); /* Увеличиваем размер кнопки при наведении */
+}
+
+/* Иконка внутри кнопки */
+.accountButton .MuiListItemIcon-root {
+  color: white; /* Белая иконка */
+  font-size: 20px; /* Уменьшенный размер иконки */
+}
+
+/* Эффект при наведении на иконку */
+.accountButton:hover .MuiListItemIcon-root {
+  color: #fff; /* Белая иконка при наведении */
 }

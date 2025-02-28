@@ -8,17 +8,34 @@ import { SERVER } from '../const';
 
 // Функция для получения всех записей с API
 const fetchWagons = async () => {
+  const token = localStorage.getItem('authToken');
+
   try {
-    const response = await fetch(SERVER + '/calculations');
+    const response = await fetch(SERVER + '/calculations', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`, // Добавляем токен
+      },
+    });
+
+    if (response.status === 401) {
+      // Если токен просрочен или отсутствует
+      console.error('Unauthorized, redirecting to login');
+      window.location.href = '/#/auth/login'; // Перенаправление на страницу логина
+      return; // Прерываем выполнение запроса
+    }
+
     if (!response.ok) {
       throw new Error('Не удалось загрузить данные с сервера');
     }
+
     return await response.json();
   } catch (error) {
     console.error('Ошибка при загрузке данных:', error);
     throw error; // Бросаем ошибку дальше
   }
 };
+
 
 // Функция для форматирования даты
 const formatDate = (dateString) => {

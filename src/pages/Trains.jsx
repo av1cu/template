@@ -150,19 +150,30 @@ const Trains = () => {
   };
 
   const handleAddWagon = async () => {
+    const token = localStorage.getItem('authToken');
+  
     try {
       const data = mapDataToKeys(fields);
       data['workgroup'] = Array.isArray(data['workgroup'])
         ? data['workgroup']
         : [data['workgroup']];
+  
       const response = await fetch(SERVER + '/trains', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, // Добавляем токен
         },
         body: JSON.stringify(data),
       });
-
+  
+      if (response.status === 401) {
+        // Если токен просрочен или отсутствует
+        console.error('Unauthorized, redirecting to login');
+        window.location.href = '/#/auth/login'; // Перенаправление на страницу логина
+        return; // Прерываем выполнение запроса
+      }
+  
       if (response.ok) {
         const result = await response.json();
         console.log(result);
@@ -177,6 +188,7 @@ const Trains = () => {
       alert('Произошла ошибка при добавлении вагона.');
     }
   };
+  
 
   return (
     <Grid2 container>

@@ -29,22 +29,39 @@ const ModalMain = ({
   );
 
    // Проверка наличия файла
-   useEffect(() => {
-    const wagonNumber = data.find(row => row.label === 'Номер вагона')?.value;
-    if (wagonNumber) {
-      fetch(`${SERVER}/files/${wagonNumber}/exist`)
-        .then(res => res.json())
-        .then(data => {
+useEffect(() => {
+  const wagonNumber = data.find(row => row.label === 'Номер вагона')?.value;
+  if (wagonNumber) {
+    const token = localStorage.getItem('authToken');
+    
+    fetch(`${SERVER}/files/${wagonNumber}/exist`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    })
+      .then(res => {
+        if (res.status === 401) {
+          // Если токен просрочен или отсутствует
+          console.error('Unauthorized, redirecting to login');
+          window.location.href = '/#/auth/login'; // Перенаправление на страницу логина
+          return; // Прерываем выполнение запроса
+        }
+        return res.json();
+      })
+      .then(data => {
+        if (data) {
           console.log(data.exists);
           setFileExists(data.exists); // Обновляем состояние, если файл существует
           if (data.exists) {
             setFileName(data.message); // Сохраняем имя файла
           }
-        })
-        .catch(console.error);
-    }
-    
-  }, [data]);
+        }
+      })
+      .catch(console.error);
+  }
+}, [data]);
+
   
 
 
@@ -76,52 +93,100 @@ const ModalMain = ({
     formData.append('file', event.target.files[0]); // Добавляем файл
     const wagonNumber = data.find(row => row.label === 'Номер вагона')?.value;
     formData.append('wagonNumber', wagonNumber);
-    
+  
+    const token = localStorage.getItem('authToken');
+  
     fetch(`${SERVER}/files/upload`, {
       method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
       body: formData,
     })
-      .then(res => res.json())
+      .then(res => {
+        if (res.status === 401) {
+          // Если токен просрочен или отсутствует
+          console.error('Unauthorized, redirecting to login');
+          window.location.href = '/#/auth/login'; // Перенаправление на страницу логина
+          return; // Прерываем выполнение запроса
+        }
+        return res.json();
+      })
       .then(data => {
-        alert('Файл успешно загружен');
-        setFileExists(true);
-        setFileName(data.file.filename); // Обновляем имя файла после загрузки
+        if (data) {
+          alert('Файл успешно загружен');
+          setFileExists(true);
+          setFileName(data.file.filename); // Обновляем имя файла после загрузки
+        }
       })
       .catch(console.error);
   };
+  
 
   // Функция для скачивания файла
-  const handleDownloadFile = () => {
-    const wagonNumber = data.find(row => row.label === 'Номер вагона')?.value;
-    fetch(`${SERVER}/files/${wagonNumber}`)
-      .then(response => {
-        if (!response.ok) throw new Error("Файл не найден");
-        return response.blob();
-      })
-      .then(blob => {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = fileName; // Используем имя файла для скачивания
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-      })
-      .catch(console.error);
-  };
+const handleDownloadFile = () => {
+  const wagonNumber = data.find(row => row.label === 'Номер вагона')?.value;
+  const token = localStorage.getItem('authToken');
+
+  fetch(`${SERVER}/files/${wagonNumber}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  })
+    .then(response => {
+      if (response.status === 401) {
+        // Если токен просрочен или отсутствует
+        console.error('Unauthorized, redirecting to login');
+        window.location.href = '/#/auth/login'; // Перенаправление на страницу логина
+        return; // Прерываем выполнение запроса
+      }
+      if (!response.ok) throw new Error("Файл не найден");
+      return response.blob();
+    })
+    .then(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName; // Используем имя файла для скачивания
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    })
+    .catch(console.error);
+};
+
 
   // Функция для удаления файла
-  const handleDeleteFile = () => {
-    const wagonNumber = data.find(row => row.label === 'Номер вагона')?.value;
-    fetch(`${SERVER}/files/${wagonNumber}`, { method: 'DELETE' })
-      .then(res => res.json())
-      .then(data => {
+const handleDeleteFile = () => {
+  const wagonNumber = data.find(row => row.label === 'Номер вагона')?.value;
+  const token = localStorage.getItem('authToken');
+
+  fetch(`${SERVER}/files/${wagonNumber}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  })
+    .then(res => {
+      if (res.status === 401) {
+        // Если токен просрочен или отсутствует
+        console.error('Unauthorized, redirecting to login');
+        window.location.href = '/#/auth/login'; // Перенаправление на страницу логина
+        return; // Прерываем выполнение запроса
+      }
+      return res.json();
+    })
+    .then(data => {
+      if (data) {
         alert('Файл успешно удалён');
         setFileExists(false); // Обновляем состояние после удаления
         setFileName(''); // Очищаем имя файла
-      })
-      .catch(console.error);
-  };
+      }
+    })
+    .catch(console.error);
+};
+
 
   return (
     <ModalItem open={open} handleClose={handleClose} title='Информация'>

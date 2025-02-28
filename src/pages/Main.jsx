@@ -39,17 +39,20 @@ const Main = () => {
   // Функция для получения списка поездов
   async function fetchTrains() {
     const apiUrl = SERVER + '/trains';
-
+    const token = localStorage.getItem('authToken');
     try {
       const response = await fetch(apiUrl, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
       });
-      // if (!response.ok) {
-      //   throw new Error(`HTTP error! Status: ${response.status}`);
-      // }
+      if (response.status === 401) {
+        // Если токен просрочен или отсутствует
+        console.error('Unauthorized, redirecting to login');
+        window.location.href = '/#/auth/login'; // Перенаправление на страницу логина
+      }
       const trains = await response.json();
       setItems(trains);
     } catch (error) {
@@ -59,11 +62,13 @@ const Main = () => {
   }
 
   const deleteTrain = async (id) => {
+    const token = localStorage.getItem('authToken');
     try {
       const response = await fetch(SERVER + `/trains/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
       });
 
@@ -73,6 +78,10 @@ const Main = () => {
         setModalInventoryListOpen(false);
       } else if (response.status === 404) {
         console.error('Train not found');
+      } else if (response.status === 401) {
+        // Если токен просрочен или отсутствует
+        console.error('Unauthorized, redirecting to login');
+        window.location.href = '/#/auth/login'; // Перенаправление на страницу логина
       } else {
         console.error('Failed to delete train');
       }
@@ -140,20 +149,25 @@ const Main = () => {
           { label: 'Группа работ', value: sorted },
         ]);
         mapped.workgroupStatus = groupStatus;
-  
+        const token = localStorage.getItem('authToken');
         const response = await fetch(SERVER + '/trains/' + currentItem.id, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
           },
           body: JSON.stringify(mapped),
         });
-  
+    
         if (response.ok) {
           const result = await response.json();
           console.log(result);
           fetchTrains();
           alert('Статус обновлен');
+        } else if (response.status === 401) {
+          // Если токен просрочен или отсутствует
+          console.error('Unauthorized, redirecting to login');
+          window.location.href = '/#/auth/login'; // Перенаправление на страницу логина
         } else {
           const error = await response.text();
           alert(`Ошибка: ${error}`);
@@ -173,19 +187,26 @@ const Main = () => {
             row.value = groupStatus;
           }
         });
+
+        const token = localStorage.getItem('authToken');
   
         const response = await fetch(SERVER + '/trains/' + currentItem.id, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
           },
           body: JSON.stringify(mapDataToKeys(dataToSend.data)),
         });
-  
+    
         if (response.ok) {
           const result = await response.json();
           fetchTrains();
           alert('Статус обновлен');
+        } else if (response.status === 401) {
+          // Если токен просрочен или отсутствует
+          console.error('Unauthorized, redirecting to login');
+          window.location.href = '/#/auth/login'; // Перенаправление на страницу логина
         } else {
           const error = await response.text();
           alert(`Ошибка: ${error}`);
@@ -280,23 +301,24 @@ const Main = () => {
           </IconButton>
   
           <Grid2 container spacing={2}>
-            {items
-              .filter((item) => {
-                // Находим статус в data каждого элемента
-                const statusItem = item.data.find((entry) => entry.label === 'Статус');
-                const itemStatus = statusItem ? statusItem.value : null;  
-  
-                return selectedStatus ? itemStatus === selectedStatus : true;
-              })
-              .map((item) => (
-                <Grid2 key={item.id} size={{ xs: 6, md: 3 }}>
-                  <InventoryCard
-                    item={item}
-                    handleClick={() => handleOpenInventoryList(item)}
-                  />
-                </Grid2>
-              ))}
-          </Grid2>
+  {Array.isArray(items) && items
+    .filter((item) => {
+      // Находим статус в data каждого элемента
+      const statusItem = item.data.find((entry) => entry.label === 'Статус');
+      const itemStatus = statusItem ? statusItem.value : null;
+
+      return selectedStatus ? itemStatus === selectedStatus : true;
+    })
+    .map((item) => (
+      <Grid2 key={item.id} size={{ xs: 6, md: 3 }}>
+        <InventoryCard
+          item={item}
+          handleClick={() => handleOpenInventoryList(item)}
+        />
+      </Grid2>
+    ))}
+</Grid2>
+
   
           <ModalMain
             open={modalInventoryListOpen}

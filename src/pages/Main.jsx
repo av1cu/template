@@ -49,15 +49,21 @@ const Main = () => {
         },
       });
       if (response.status === 401) {
-        // Если токен просрочен или отсутствует
         console.error('Unauthorized, redirecting to login');
         window.location.href = '/template/#/auth/login'; // Перенаправление на страницу логина
       }
       const trains = await response.json();
-      setItems(trains);
+
+      // Сортировка по номеру вагона (wagonNumber) перед установкой состояния
+      const sortedTrains = trains.sort((a, b) => {
+        const wagonNumberA = a.data.find(item => item.label === 'Номер вагона')?.value || '';
+        const wagonNumberB = b.data.find(item => item.label === 'Номер вагона')?.value || '';
+        return wagonNumberA.localeCompare(wagonNumberB);
+      });
+
+      setItems(sortedTrains);
     } catch (error) {
       console.error('Ошибка при получении списка поездов:', error);
-      // throw error; // Пробрасываем ошибку, чтобы её можно было обработать выше
     }
   }
 
@@ -107,116 +113,72 @@ const Main = () => {
     return mappedData;
   };
 
-  const handleWorkGroupStatusChange = async (status, currentWorkGroup) => {
+  const handleWorkGroupStatusChange = async (statuses, workGroups) => {
     try {
-      const workGroups = currentItem.data.find((row) => row.label === 'Группа работ');
+      const workGroupsData = currentItem.data.find((row) => row.label === 'Группа работ');
       
-      if (Array.isArray(workGroups.value)) {
-        // Если есть несколько групп, сортируем их
-        const sorted = [
-          currentWorkGroup,
-          ...workGroups.value.filter((item) => item !== currentWorkGroup),
-        ];
-  
-        // Обновляем данные о группе работ
-        const dataToSend = currentItem.data.filter((row) => row.label !== 'Группа работ');
-        const workStatuses = currentItem.data.find((row) => row.label === 'Статус группы работ');
-        
-        const groupStatus = workStatuses.value === 'Нет статусов'
-          ? [{ value: currentWorkGroup, status }]
-          : workStatuses.value.map((item) =>
-              item.value === currentWorkGroup ? { value: currentWorkGroup, status } : item
-            );
-  
-        // Логика для изменения статуса вагона
-        dataToSend.forEach((row) => {
-          if (row.label === 'Статус') {
-            if (status === 'Готово' && groupStatus.every((item) => item.status === 'Готово') && groupStatus.length === sorted.length) {
-              // Если все группы работ готовы, ставим статус вагона как 'Готово'
-              row.value = 'Готово';
-            } else if (status === 'Готово') {
-              // Если хотя бы одна группа не готова, ставим статус вагона как 'В ожидании'
-              row.value = 'В ожидании';
-            } else {
-              row.value = status; // Иначе, статус вагона обновляется в зависимости от статуса группы работ
-            }
-          }
-        });
-  
-        // Обновляем данные с новой группой работ
-        const mapped = mapDataToKeys([
-          ...dataToSend,
-          { label: 'Группа работ', value: sorted },
-        ]);
-        mapped.workgroupStatus = groupStatus;
-        const token = localStorage.getItem('authToken');
-        const response = await fetch(SERVER + '/trains/' + currentItem.id, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify(mapped),
-        });
-    
-        if (response.ok) {
-          const result = await response.json();
-          console.log(result);
-          fetchTrains();
-          alert('Статус обновлен');
-        } else if (response.status === 401) {
-          // Если токен просрочен или отсутствует
-          console.error('Unauthorized, redirecting to login');
-          window.location.href = '/template/#/auth/login'; // Перенаправление на страницу логина
-        } else {
-          const error = await response.text();
-          alert(`Ошибка: ${error}`);
-        }
+      // Если группа состоит из нескольких элементов, обновляем её
+      let updatedWorkGroups = [];
+      if (Array.isArray(workGroupsData.value)) {
+        updatedWorkGroups = workGroupsData.value.map((group) =>
+          workGroups.includes(group) ? group : null
+        ).filter(Boolean);
       } else {
-        // Если группа работ состоит из одного элемента
-        const dataToSend = currentItem;
-        const groupStatus = [{ value: currentWorkGroup, status }];
-        dataToSend.data.forEach((row) => {
-          if (row.label === 'Статус') {
-            row.value = status;
-          }
-          if (row.label === 'Группа работ') {
-            row.value = [row.value];
-          }
-          if (row.label === 'Статус группы работ') {
-            row.value = groupStatus;
-          }
-        });
-
-        const token = localStorage.getItem('authToken');
+        updatedWorkGroups = workGroups;
+      }
   
-        const response = await fetch(SERVER + '/trains/' + currentItem.id, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify(mapDataToKeys(dataToSend.data)),
-        });
-    
-        if (response.ok) {
-          const result = await response.json();
-          fetchTrains();
-          alert('Статус обновлен');
-        } else if (response.status === 401) {
-          // Если токен просрочен или отсутствует
-          console.error('Unauthorized, redirecting to login');
-          window.location.href = '/template/#/auth/login'; // Перенаправление на страницу логина
-        } else {
-          const error = await response.text();
-          alert(`Ошибка: ${error}`);
+      // Обновляем только 'Группа работ' и 'Статус группы работ'
+      const updatedData = currentItem.data.map((row) => {
+        if (row.label === 'Группа работ') {
+          return { ...row, value: updatedWorkGroups };
         }
+        if (row.label === 'Статус группы работ') {
+          return { ...row, value: statuses.map((status, index) => ({
+            value: updatedWorkGroups[index],
+            status
+          })) };
+        }
+        return row;
+      });
+  
+      // Создаем объект для отправки на сервер
+      const dataToSend = {
+        ...currentItem,
+        data: updatedData,
+      };
+  
+      // Отправляем PUT запрос
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(SERVER + '/trains/' + currentItem.id, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(mapDataToKeys(dataToSend.data)),
+      });
+  
+      // Обработка ответа
+      if (response.ok) {
+        const result = await response.json();
+        console.log(result);
+        fetchTrains();
+        alert('Статус обновлен');
+      } else if (response.status === 401) {
+        // Если токен просрочен или отсутствует
+        console.error('Unauthorized, redirecting to login');
+        window.location.href = '/template/#/auth/login'; // Перенаправление на страницу логина
+      } else {
+        const error = await response.text();
+        alert(`Ошибка: ${error}`);
       }
     } catch (e) {
       console.log(e);
       alert('Что-то пошло не так');
     }
   };
+  
+  
   
 
   const handleOpenInventoryList = (item) => {
@@ -241,8 +203,8 @@ const Main = () => {
   sx={{
     width: 160,
     position: 'absolute',
-    top: 12,
-    right: 64,
+    top: 10,
+    right: 82,
   }}
   size="small"
 >
@@ -278,17 +240,15 @@ const Main = () => {
     <MenuItem value="Готово">Готово</MenuItem>
   </Select>
 </FormControl>
-
-
   
           {/* Circular Button with Custom Image */}
           <IconButton
             sx={{
               position: 'absolute',
-              top: 4,
+              top: 0,
               right: 24,
-              width: 40,
-              height: 40,
+              width: 50,
+              height: 50,
               borderRadius: '50%',
             }}
             onClick={() => setModalHelpOpen(true)} // Открываем ModalHelp

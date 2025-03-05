@@ -21,7 +21,7 @@ const ModalMain = ({
   const [showOptions, setShowOptions] = useState(false);
   const [fileExists, setFileExists] = useState(false); // Добавим состояние для проверки существования файла
   const [fileName, setFileName] = useState(''); // Состояние для хранения имени файла
-
+  const [modifiedWorkGroups, setModifiedWorkGroups] = useState({}); // Состояние для хранения изменений
 
   // Проверка, имеет ли вагон статус "Готово"
   const isReady = data.some(
@@ -71,22 +71,52 @@ useEffect(() => {
   };
 
   const handleSelectWorkgroup = (group) => {
-    setCurrentWorkGroup(group);
-    setShowOptions(true);
-  };
-
-  const calcVariant = (val) => {
-    const statuses = data.find(
-      (row) => row.label === 'Статус группы работ'
-    ).value;
-    if (statuses !== 'Нет статусов') {
-      const status = statuses.find((row) => row.value === val);
-      if (status && status.status === 'Готово') {
-        return 'success';
-      }
-      return 'primary';
+    // Устанавливаем выбранную группу
+    if (currentWorkGroup === group) {
+      setShowOptions(!showOptions); // Если группа уже выбрана, то скрываем/показываем опции
+    } else {
+      setCurrentWorkGroup(group); // Если новая группа, показываем опции для нее
+      setShowOptions(true);
     }
   };
+
+  // Функция для обновления статуса группы работ в локальном состоянии
+const handleWorkGroupStatusChangeLocally = (status, workGroup) => {
+  setModifiedWorkGroups((prevState) => ({
+    ...prevState,
+    [workGroup]: status,
+  }));
+};
+
+// Функция для отправки изменений на сервер
+const handleSaveChanges = () => {
+  const modifiedStatuses = Object.entries(modifiedWorkGroups).map(([workGroup, status]) => status);
+  const modifiedWorkGroupsList = Object.keys(modifiedWorkGroups);
+
+  if (modifiedStatuses.length > 0) {
+    handleWorkGroupStatusChange(modifiedStatuses, modifiedWorkGroupsList); // Отправляем данные на сервер
+  } else {
+    alert('Нет изменений для сохранения');
+  }
+
+  // Очищаем локальное состояние
+  setModifiedWorkGroups({});
+};
+  
+
+  // Логика для отображения состояния
+const calcVariant = (val) => {
+  const statuses = data.find(
+    (row) => row.label === 'Статус группы работ'
+  ).value;
+  if (statuses !== 'Нет статусов') {
+    const status = statuses.find((row) => row.value === val);
+    if (status && status.status === 'Готово') {
+      return 'success';
+    }
+    return 'primary';
+  }
+};
    // Функция для загрузки файла
    const handleFileUpload = (event) => {
     const formData = new FormData();
@@ -190,117 +220,102 @@ const handleDeleteFile = () => {
 
   return (
     <ModalItem open={open} handleClose={handleClose} title='Информация'>
-      {data.map((row, index) => {
-        if (row.label !== 'Статус группы работ') {
-          if (row.label === 'Группа работ') {
-            if (Array.isArray(row.value)) {
-              return (
-                <div>
-                  <Stack direction='row' spacing={1} mb={2}>
-                    {row.value.map((val) => (
-                      <div>
-                        <ButtonItem
-                          size='small'
-                          handleChange={() => handleSelectWorkgroup(val)}
-                          label={val}
-                          color={calcVariant(val)}
-                          variant='outlined'
-                          sx={{ mb: 1 }}
-                        />
-                        {showOptions && currentWorkGroup === val && (
-                          <Stack direction='row' spacing={1}>
-                            <ButtonItem
-                              size='small'
-                              variant='outlined'
-                              handleChange={() =>
-                                handleWorkGroupStatusChange(
-                                  'В процессе',
-                                  currentWorkGroup
-                                )
-                              }
-                              label='В активе'
-                            />
-                            <ButtonItem
-                              size='small'
-                              variant='outlined'
-                              handleChange={() =>
-                                handleWorkGroupStatusChange(
-                                  'Готово',
-                                  currentWorkGroup
-                                )
-                              }
-                              label='Готово'
-                            />
-                          </Stack>
-                        )}
-                      </div>
-                    ))}
-                  </Stack>
-                </div>
-              );
-            } else {
-              return (
-                <div>
-                  <Stack direction='row' spacing={1} mb={1}>
-                    <ButtonItem
-                      size='small'
-                      variant='outlined'
-                      handleChange={() => handleSelectWorkgroup(row.value)}
-                      label={row.value}
-                      color={calcVariant(row.value)}
-                    />
-                  </Stack>
-                  {showOptions && (
-                    <Stack direction='row' spacing={1} mb={2}>
-                      <ButtonItem
-                        size='small'
-                        variant='outlined'
-                        handleChange={() =>
-                          handleWorkGroupStatusChange(
-                            'В процессе',
-                            currentWorkGroup
-                          )
-                        }
-                        label='В активе'
-                      />
-                      <ButtonItem
-                        size='small'
-                        variant='outlined'
-                        handleChange={() =>
-                          handleWorkGroupStatusChange(
-                            'Готово',
-                            currentWorkGroup
-                          )
-                        }
-                        label='Готово'
-                      />
-                    </Stack>
-                  )}
-                </div>
-              );
-            }
-          }
-          const value = row.value; // Если массив, объединяем через запятую
+       {data.map((row, index) => {
+        if (row.label === 'Статус группы работ') {
           return (
-            <TextFieldItem
-              key={index}
-              label={row.label}
-              value={
-                row.label === 'Начало ремонта' ||
-                row.label === 'Конец ремонта' ||
-                row.label === 'Дата'
-                  ? formatDate(value)
-                  : value
-              }
-              handleChange={() => {}}
-              fullWidth
-              size='small'
-              sx={{ mb: 2 }}
-              disabled
-            />
+            <div key={index}>
+              <Stack direction="row" spacing={1} mb={2}>
+                {row.value.map((statusRow) => {
+                  const { value: groupName, status } = statusRow;
+
+                  // Получаем текущий статус для группы из локального состояния, если он есть
+                  const currentStatus = modifiedWorkGroups[groupName] || status;
+
+                  // Определяем цвет кнопки на основе статуса
+                  let buttonColor = 'default'; // Серая кнопка по умолчанию для "В процессе"
+                  if (currentStatus === 'Готово') {
+                    buttonColor = 'success'; // Зеленая кнопка, если статус "Готово"
+                  }
+
+                  return (
+                    <div key={groupName}>
+                      {/* Кнопка с названием группы работ */}
+                      <ButtonItem
+                        size="small"
+                        handleChange={() => handleSelectWorkgroup(groupName)} // Обработчик выбора группы
+                        label={groupName}
+                        color={buttonColor} // Динамический цвет кнопки
+                        variant="outlined"
+                        sx={{
+                          mb: 1,
+                          borderColor: buttonColor === 'default' ? 'inherit' : 'inherit', // Убираем рамку выделения
+                          backgroundColor: buttonColor === 'default' ? 'inherit' : 'inherit', // Убираем фон выделения
+                        }}
+                      />
+                      {/* Показать дополнительные кнопки для изменения статуса */}
+                      {showOptions && currentWorkGroup === groupName && (
+                        <Stack direction="row" spacing={1}>
+                          <ButtonItem
+                            size="small"
+                            variant="outlined"
+                            handleChange={() =>
+                              handleWorkGroupStatusChangeLocally('В процессе', groupName)
+                            }
+                            label="В процессе"
+                            color={currentStatus === 'В процессе' ? 'default' : 'inherit'} // Серая кнопка для "В процессе"
+                          />
+                          <ButtonItem
+                            size="small"
+                            variant="outlined"
+                            handleChange={() =>
+                              handleWorkGroupStatusChangeLocally('Готово', groupName)
+                            }
+                            label="Готово"
+                            color={currentStatus === 'Готово' ? 'success' : 'inherit'} // Зеленая кнопка для "Готово"
+                          />
+                        </Stack>
+                      )}
+                    </div>
+                  );
+                })}
+              </Stack>
+            </div>
           );
         }
+
+        // Если это не "Статус группы работ", обрабатываем обычные поля данных
+        const value = row.value;
+        return (
+          <TextFieldItem
+            key={index}
+            label={row.label}
+            value={row.label === 'Начало ремонта' || row.label === 'Конец ремонта' || row.label === 'Дата' ? formatDate(value) : value}
+            handleChange={() => {}}
+            fullWidth
+            size="small"
+            sx={{ mb: 2 }}
+            disabled
+          />
+        );
       })}
+
+
+
+
+
+    {/* Кнопка для сохранения изменений */}
+    <ButtonItem
+      label="Сохранить"
+      variant="contained"
+      color="primary"
+      handleChange={handleSaveChanges} // Сохраняем изменения
+      sx={{
+        mt: 2,
+        backgroundColor: '#4caf50',
+        color: 'white',
+        '&:hover': { backgroundColor: '#388e3c' },
+      }}
+    />
       <div
   style={{
     display: 'flex',
